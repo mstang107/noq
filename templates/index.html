@@ -1,0 +1,28 @@
+{% extends 'mysite/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+	{% load static %}
+	<br>
+	<div class='row'>
+		<div class='smallhalfrow'>
+			<img src="{% static 'michael.jpg' %}" class='figure'>
+		</div>
+		
+		<div class='largehalfrow'>
+			<div style='display:flex; align-items: center;'>
+				<div style='font-size: 18pt; font-weight: bold;'>Michael Tang</div>
+				<div style='margin-left: 10px; font-family: "Courier New"'>(mst0 at uw dot edu)</div>
+			</div>
+			
+			<p>I am an incoming graduate student at the <a href='https://www.washington.edu/'>University of Washington</a>'s <a href='https://math.washington.edu/graduate-program'>math department</a>, starting Fall 2021. I am vaguely interested in algebra-related fields (algebraic combinatorics? algebraic topology?).
+
+			<p>I was an undergrad student at <a href='http://mit.edu/'>MIT</a>'s <a href='https://math.mit.edu/'>math department</a>, 2017-2021. I lived in <a href='https://next.mit.edu/'>Next House</a> (best house!).
+
+			<p>Here is my <a href="{% static 'cv.pdf' %}">CV</a>.
+
+			<p>I love puzzles, board games, and video games.
+		</div>
+	</div>
+{% endblock %}

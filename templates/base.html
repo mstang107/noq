@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    {% block head %}
+        <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+        <script src="{% static 'jquery.js' %}"></script>
+    {% endblock %}
+    <title>{% block title %}Home{% endblock %}</title>
+</head>
+<body>
+    {% block content %}
+        Tell Michael to add some content here!
+    {% endblock %}
+</body>
+</html>

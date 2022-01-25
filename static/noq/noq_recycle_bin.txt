@@ -1,0 +1,82 @@
+
+// class NagareElf extends Elf
+// {
+// 	static controls()
+// 	{
+// 		let controls = super.controls();
+// 		controls['[URDL]'] = 'Put black (path) arrow';
+// 		controls['Shift + [URDL]'] = 'Put white (wind) arrow';
+// 		return controls;
+// 	}
+
+// 	constructor(elt)
+// 	{
+// 		super(elt);
+// 		this.dict = {
+// 			'u': 'wide_up_arrow.png',
+// 			'r': 'wide_right_arrow.png',
+// 			'd': 'wide_down_arrow.png',
+// 			'l': 'wide_left_arrow.png',
+// 			'U': 'negative_wide_up_arrow.png',
+// 			'R': 'negative_wide_right_arrow.png',
+// 			'D': 'negative_wide_down_arrow.png',
+// 			'L': 'negative_wide_left_arrow.png'
+// 		}
+// 	}
+// 	handle_input(key, modifiers)
+// 	{
+// 		super.handle_input(key, modifiers);
+
+// 		if (key == 'x')
+// 		{
+// 			this.key = 'black';
+// 			this.puzzle_elt.style.backgroundColor = 'black';
+// 		}
+
+// 		else if (this.dict[key])
+// 		{
+// 			this.key = key;
+// 			this.puzzle_elt.style.backgroundImage = image_url(this.dict[key]);
+// 		}
+// 	}
+// 	load_example(str)
+// 	{
+// 		this.key = str;
+// 		if (str == 'black')
+// 			this.puzzle_elt.style.backgroundColor = 'black';
+// 		else
+// 			this.puzzle_elt.style.backgroundImage = image_url(this.dict[str]);
+// 	}
+// 	encode_input()
+// 	{
+// 		return this.key;
+// 	}
+// }
+
+
+
+// class IntElf extends Elf
+// {
+// 	static controls()
+// 	{
+// 		let controls = super.controls();
+// 		controls['[0-9]'] = 'Write clue in cell';
+// 		return controls;
+// 	}
+
+// 	handle_input(key, modifiers)
+// 	{
+// 		super.handle_input(key, modifiers);
+
+// 		if (!'1234567890'.includes(key)) return;
+// 		let num = parseInt(this.puzzle_elt.innerHTML + key);
+// 		if (num > 99)
+// 			num = key;
+// 		this.puzzle_elt.innerHTML = num+'';
+// 	}
+
+// 	encode_input()
+// 	{
+// 		return this.puzzle_elt.innerHTML ? this.puzzle_elt.innerHTML : null;
+// 	}
+// }
