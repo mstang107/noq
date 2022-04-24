@@ -50,7 +50,7 @@ def pattern_matches(q_pattern, pattern):
         return q_pattern == [0]
     else:
         return len(q_pattern) == len(pattern) and \
-            all( q_pattern.count(n) <= pattern.count(int(n)) for n in '12345678' )
+            all( q_pattern.count(int(n)) <= pattern.count(int(n)) for n in '12345678' )
 
 def solve(E):
     shading_solver = RectangularGridShadingSolver(E.R, E.C)
