@@ -65,7 +65,7 @@ import os
 from time import time
 from functools import reduce
 
-CLASP_COMMAND = 'C:/Users/micha/Dropbox/coding/web/noq/clasp.exe --sat-prepro --eq=1 --trans-ext=dynamic'
+CLASP_COMMAND = 'C:/Users/micha/Dropbox/coding/noq/solvers/clasp.exe --sat-prepro --eq=1 --trans-ext=dynamic'
 
 ################################################################################
 ###############################  Infrastructure  ###############################
