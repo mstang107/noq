@@ -1459,6 +1459,17 @@ let elf_types = {
 	magnets: MagnetsElf,
 	masyu: CircleElf,
 	minesweeper: DirectSum(QuestionMarkElf, IntElf(0,8,'[0-8]'), 'first'),
+	moonsun: DirectSum(
+		ImageElf(
+			{
+				'm': 'moon', 's': 'white_circle'
+			},
+			{
+				'm': 'Put a moon', 's': 'Put a sun'
+			}
+		),
+		BorderElf,
+	),
 	nagare: DirectSum(
 		ImageElf(
 			{
