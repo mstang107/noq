@@ -1395,8 +1395,34 @@ class YajilinElf extends DirectSum(
 	}
 }
 
-// TODO don't shade the clue cells in yajikazu (it's misleading)
-let YajikazuElf = InvertSolutionZOrder(YajilinElf);
+class YajikazuElf extends InvertSolutionZOrder(
+		DirectSum(
+		DirectSum(IntElf(), ImageElf(
+			{'u': 'up_arrow.png',
+			'r': 'right_arrow.png',
+			'd': 'down_arrow.png',
+			'l': 'left_arrow.png'},
+			{'[urdl]': 'Add arrow to cell'}
+		)), BgColorElf({'x': ['gray', 'gray']})
+)) {
+
+	handle_input(key, modifiers)
+	{
+		super.handle_input(key, modifiers);
+	}
+
+	load_example(l)
+	{
+		if (l === 'gray')
+		{
+			this.elf2.load_example('gray');
+		} else {
+			this.elf1.elf1.load_example(l[0][0]);
+			this.elf1.elf2.load_example(l[0][1]);
+			this.elf2.load_example(l[1]);
+		}
+	}
+}
 
 let elf_types = {
 	akari: AkariElf,

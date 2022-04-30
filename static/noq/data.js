@@ -108,7 +108,7 @@ const puzzle_types = {
 		},
 	moonsun: {
 		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
-		properties: { outside: '0000', border: false }
+		properties: { outside: '0000', border: true }
 		},
 	nagare: {
 		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },

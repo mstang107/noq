@@ -35,8 +35,8 @@ def solve(E):
 
     # clues are correct (or shaded over)
     for (r,c) in E.clues:
-        num_string = E.clues[(r,c)][:-1]
-        direction = E.clues[(r,c)][-1]
+        num_string = E.clues[(r,c)][0]
+        direction = E.clues[(r,c)][1]
         # check the clue for validity
         if not num_string.isnumeric() or direction not in 'lrud':
             raise ValueError('Please ensure that each clue has both a number and a direction.')
