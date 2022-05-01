@@ -3,7 +3,7 @@
 clasp.exe
 clasp
 *~
-settings.py
+noq/settings.py
 **/claspy.py
 **/migrations/
 db.sqlite3
