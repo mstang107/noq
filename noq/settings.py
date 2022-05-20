@@ -26,7 +26,7 @@ SECRET_KEY = '123jes0d9jd0af93w40ofjs98fijauep093j84f_@#4023984'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['www.noq.solutions']
+ALLOWED_HOSTS = []
 
 
 # Application definition

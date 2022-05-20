@@ -35,7 +35,7 @@ def solve(E):
 
     # If there are any numbers given in the grid, make sure they're the same in the solution.
     for (r,c) in E.clues:
-        require(grid[r][c] == clues[(r,c)])
+        require(grid[r][c] == E.clues[(r,c)])
 
     return utils.get_all_grid_solutions(grid)
 
