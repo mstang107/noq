@@ -194,6 +194,10 @@ const puzzle_types = {
 				},
 		properties: { outside: '0000', border: false }
 		},
+	stostone: {
+		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		properties: { outside: '0000', border: true }
+		},
 	sudoku: {
 		params: {
 			'Diagonal': {name: 'Diagonal', value:false},

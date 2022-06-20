@@ -1529,6 +1529,7 @@ let elf_types = {
 	spiralgalaxies: SpiralGalaxiesElf,
 	starbattle: BorderElf,
 	statuepark: CircleElf,
+	stostone: IntBordersElf(),
 	sudoku: SudokuElf,
 	tapa: TapaElf,
 	tatamibari: LetterElf('+|-'),
