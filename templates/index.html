@@ -1,28 +1,47 @@
-{% extends 'mysite/base.html' %}
+{% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% load static %}
+
+{% block title %}Noq{% endblock %}
 
 {% block content %}
-	{% load static %}
-	<br>
-	<div class='row'>
-		<div class='smallhalfrow'>
-			<img src="{% static 'michael.jpg' %}" class='figure'>
+	<div style='margin-left: 10%; margin-right: 10%;'>
+		<center>
+			<b style='font-size: 28px;'>Noq - logic puzzle solver</b><br>
+			<span style='font-size: 14px'>
+				by
+					<a href='https://github.com/jenna-h/'>Jenna</a>
+				and
+					<a href='https://mstang.xyz'>Michael</a>
+				using
+					<a href='https://github.com/danyq/claspy'>claspy</a> <br>
+			</span>
+		</center>
+
+		<br>
+
+		<div id='typegroups'>
+			{% for cat, cat_name in cats.items %}
+				<div class='typegroup'>
+					<b>{{ cat_name }}</b>
+					<ul>
+					{% for cat0, cat0_types in types.items %}
+						{% if cat0 == cat %} <!-- this Django code sorta sucks -->
+							{% for pt_dict in cat0_types %}
+								<li><a href='{{ pt_dict.value }}'>{{ pt_dict.name }}</a></li>
+							{% endfor %}
+						{% endif %}
+					{% endfor %}
+					</ul>
+				</div>
+			{% endfor %}
 		</div>
 		
-		<div class='largehalfrow'>
-			<div style='display:flex; align-items: center;'>
-				<div style='font-size: 18pt; font-weight: bold;'>Michael Tang</div>
-				<div style='margin-left: 10px; font-family: "Courier New"'>(mst0 at uw dot edu)</div>
-			</div>
-			
-			<p>I am an incoming graduate student at the <a href='https://www.washington.edu/'>University of Washington</a>'s <a href='https://math.washington.edu/graduate-program'>math department</a>, starting Fall 2021. I am vaguely interested in algebra-related fields (algebraic combinatorics? algebraic topology?).
+		<br>
 
-			<p>I was an undergrad student at <a href='http://mit.edu/'>MIT</a>'s <a href='https://math.mit.edu/'>math department</a>, 2017-2021. I lived in <a href='https://next.mit.edu/'>Next House</a> (best house!).
-
-			<p>Here is my <a href="{% static 'cv.pdf' %}">CV</a>.
-
-			<p>I love puzzles, board games, and video games.
-		</div>
+		<center style='font-size: 12px';>
+			&copy; 2022; 
+			general layout of this page borrowed from <a href='https://puzz.link/list.html'>puzz.link</a>
+		</center>
 	</div>
 {% endblock %}

@@ -1,25 +1,15 @@
 {% extends 'base.html' %}
 {% block head %}
-	{{ block.super }} 
+	{{ block.super }}
 	{% load static %}
 	<link rel="stylesheet" type="text/css" href="{% static 'noq/noq.css' %}"></link>
 {% endblock %}
-{% block title %}Noq{% endblock %}
+{% block title %}{{ name }} solver - Noq{% endblock %}
 {% block content %}
 	<div id='noq'>
 		<center>
 			<b>{{ name }} solver</b>
-			<br>
-			<span style='font-size: 14px'>
-				by
-					<a href='https://github.com/jenna-h/'>Jenna</a>
-				and
-					<a href='https://mstang.xyz'>Michael</a>
-				using
-					<a href='https://github.com/danyq/claspy'>claspy</a>
-			</span>
 		</center>
-		<br>
 
 		<div id='top_pane'>
 			<div id='buttons_div'>
@@ -49,4 +39,7 @@
 		pt = '{{ value }}';
 	</script>
 	<script src="{% static 'noq/noq.js' %}"></script>
+
+	<br>
+	<center><a href='/'>Back</a></center>
 {% endblock %}

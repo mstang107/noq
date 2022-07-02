@@ -7,7 +7,7 @@ from django.contrib import admin
 import traceback
 import json
 from static import utils
-from static.consts import types as PUZZLE_TYPES
+from static.consts import types as PUZZLE_TYPES, cats as CATS
 
 def create_view(pt_dict):
     return lambda request: render(request, './noq.html', pt_dict)
@@ -17,7 +17,28 @@ def redirect_view(red_url):
 
 urlpatterns = []
 
-# TODO make a home URL
+# index page
+
+types_by_cat = {}
+
+for pt_dict in PUZZLE_TYPES:
+    cat = pt_dict['cat']
+    if cat not in types_by_cat:
+        types_by_cat[cat] = []
+    types_by_cat[cat].append(pt_dict)
+
+for cat in types_by_cat:
+    types_by_cat[cat] = sorted(types_by_cat[cat], key=lambda d: d['name'])
+
+print(types_by_cat)
+
+urlpatterns.append(
+    path(route='',
+        view=lambda request: 
+            render(request, './index.html', {'types': types_by_cat, 'cats': CATS}))
+)
+
+# solver pages
 
 for pt_dict in PUZZLE_TYPES:
     value = pt_dict['value']

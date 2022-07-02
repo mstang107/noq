@@ -112,12 +112,21 @@ html *
 	content: '[';
 }
 
-/*.header .active
-{
-	text-decoration: underline;
-}*/
-
 .header .active::after
 {
 	content: ']';
+}
+
+#typegroups
+{
+	display: grid;
+  	grid-template-columns: 1fr 1fr 1fr;
+}
+
+.typegroup
+{	
+	border: 1px solid black;
+	margin: 10px;
+	padding: 10px;
+	min-width: 25%;
 }
