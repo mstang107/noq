@@ -36,6 +36,10 @@ const puzzle_types = {
 			'Product': {name: 'Product', value:false} },
 		properties: { outside: '0000', border: false },
 		},
+	chocona: {
+		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		properties: { outside: '0000', border: true },
+		},
     countryroad: {
         params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
         properties: { outside: '0000', border: true }
