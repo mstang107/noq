@@ -1,30 +1,37 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import *
 from django.template import Template, RequestContext, Context
 from django.urls import include, path
+from django.views.generic.base import RedirectView
 from django.contrib import admin
 import traceback
 import json
 from static import utils
-from static.utils import *
-from static.all_pages import * # this is where PAGES comes from
+from static.consts import types as PUZZLE_TYPES
 
-context = {'pages': PAGES}
+def create_view(pt_dict):
+    return lambda request: render(request, './noq.html', pt_dict)
+
+def redirect_view(red_url):
+    return RedirectView.as_view(url=red_url)
 
 urlpatterns = []
-for page in filter(lambda p: p['app'] == 'noq', PAGES):
-    # define view function
-    this_context = add_dicts(context, {'this_page_name' : page['name']})
-    exec(f'''def {page["name"].replace(" ", "_")}(request):
-    return render(request, '{page["template_path"]}', {this_context})''')
+
+# TODO make a home URL
+
+for pt_dict in PUZZLE_TYPES:
+    value = pt_dict['value']
+    name = pt_dict['name']
 
     urlpatterns.append(
-        path(
-            page["address"],
-            eval(page["name"].replace(" ", "_")), # the view function defined above
-            name=page["name"]
-        )
+        path(route=value, view=create_view(pt_dict), name=f'{name} solver - Noq')
     )
+
+    if 'aliases' in pt_dict:
+        for alias in pt_dict['aliases']:
+            urlpatterns.append(
+                path(route=alias, view=redirect_view(pt_dict['value']))
+            )
 
 # internal/custom views
 

@@ -3,7 +3,6 @@
 {% block head %}
 	{{ block.super }} 
 	{% load static %}
-	<script src="{% static 'noq/noq.js' %}"></script>
 	<link rel="stylesheet" type="text/css" href="{% static 'noq/noq.css' %}"></link>
 {% endblock %}
 
@@ -12,85 +11,26 @@
 {% block content %}
 	<div id='noq'>
 		<center>
-			<b>Noq</b> - Logic puzzle solver
+			<b>{{ name }} solver</b>
 			<br>
 			<span style='font-size: 14px'>
-				by <a href='https://mstang.xyz'>Michael</a>
-				and <a href='https://github.com/jenna-h/'>Jenna</a>,
-				using <a href='https://github.com/danyq/claspy'>claspy</a>
+				by
+					<a href='https://github.com/jenna-h/'>Jenna</a>
+				and
+					<a href='https://mstang.xyz'>Michael</a>
+				using
+					<a href='https://github.com/danyq/claspy'>claspy</a>
 			</span>
 		</center>
 		<br>
 
-		<!-- TODO make the list of puzzles auto-populate based on `data.js` or something -->
 		<div id='top_pane'>
-			<select id="puzzle_type" onchange="change_status();">
-			 	<option value="none">Select puzzle</option>
-			 <!--	<option value="aho">Aho-ni-Narikire</option>
-		        <option value="amibo">Amibo</option> -->
-		        <option value="akari">Akari</option>
-		        <option value="aquarium">Aquarium</option>
-		        <option value="balanceloop">Balance Loop</option>
-		        <option value="battleship">Battleships</option>
-		        <option value="binairo">Binairo</option>
-				<option value="castlewall">Castle Wall</option>
-			 	<option value="cave">Cave</option>
-	            <option value="countryroad">Country Road</option>
-	            <option value="doppelblock">Doppelblock</option>
-	            <option value="easyas">Easy As...</option>
-	            <option value="fillomino">Fillomino</option>
-	            <option value="ncells">Five/Four/N Cells</option>
-		        <option value="gokigen">Gokigen Naname</option>
-		        <option value="hashi">Hashiwokakero</option>
-		        <option value="heteromino">Heteromino</option>
-		        <option value="heyawake">Heyawake</option>
-		        <option value="hitori">Hitori</option>
-		        <option value="hotaru">Hotaru Beam</option>
-		        <option value="kakuro">Kakuro</option>
-		        <option value="kurotto">Kurotto</option>
-		        <option value="kuromasu">Kuromasu</option>
-	            <option value="lits">LITS</option>
-				<option value="magnets">Magnets</option>
-	            <option value="masyu">Masyu</option>
-	            <option value="minesweeper">Minesweeper</option>
-	            <option value="moonsun">Moon-or-Sun</option>
-	            <option value="nagare">Nagareru-Loop</option>
-	            <option value="nanro">Nanro (Signpost)</option>
-	            <option value="nonogram">Nonogram</option>
-	            <option value="norinori">Norinori</option>
-	            <option value="numberlink">Numberlink</option>
-	            <option value="nuribou">Nuribou</option>
-			 	<option value="nurikabe">Nurikabe</option>
-			 	<option value="nurimisaki">Nurimisaki</option>
-	            <option value="onsen">Onsen-Meguri</option>
-	            <option value="rippleeffect">Ripple Effect</option>
-	            <option value="shakashaka">Shakashaka</option>
-	            <option value="shikaku">Shikaku</option>
-	            <option value="shimaguni">Shimaguni</option>
-	            <option value="skyscrapers">Skyscrapers</option>
-	          	<option value="slitherlink">Slitherlink (Sheep/Wolf)</option>
-	          	<option value="spiralgalaxies">Spiral Galaxies</option>
-	            <option value="starbattle">Star Battle</option>
-	            <option value="statuepark">Statue Park</option>
-	            <option value="stostone">Stostone</option>
-	            <option value="sudoku">Sudoku</option>
-	            <option value="tapa">Tapa</option>
-	            <option value="tll">Tapa-Like Loop</option>
-	            <option value="tatamibari">Tatamibari</option>
-	            <option value="tents">Tents</option>
-			 	<option value="yajilin">Yajilin</option>
-			 	<option value="yajisankazusan">Yajisan-Kazusan</option>
-			 	<option value="yinyang">Yin-Yang</option>
-	      <!--      <option value="yajilin_transparent">Yajilin (Transparent)</option> -->
-			</select>
-
 			<div id='buttons_div'>
 				<button id='solve_button' onclick='solve_puzzle()'>Solve!</button>
 				<button id='reset_button' onclick='reset_button_callback()'>Reset</button>
 				<button id='controls_button' onclick='toggle_controls()'>Show controls</button>
 				<button id='copy_button' onclick='copy_to_clipboard()'>Copy to clipboard</button>
 			</div>
-
 		</div>
 
 		<div id='controls_div'></div>
@@ -109,6 +49,7 @@
 		<div id='copy_div' style='display:none'></div>
 	</div>
 	<script>
-		set_status('none');
+		pt = '{{ value }}';
 	</script>
+	<script src="{% static 'noq/noq.js' %}"></script>
 {% endblock %}

@@ -13,7 +13,10 @@ $.getMultiScripts(SCRIPTS_TO_LOAD, 'static/').done(function() {
 	PUZZLE_TYPES = puzzle_types;
 	EXAMPLES = examples;
 	NAV_KEYS = nav_keys;
+
+	set_status('unsolved', switching_types=true);
 });
+
 
 function get(elt_id) { return document.getElementById(elt_id); }
 function is_json(obj) { return obj.constructor == ({}).constructor; }
@@ -185,7 +188,6 @@ $(document).click(function (event) { handle_click(event, event.target); });
 
 $(document).keydown(function (event) {
 	if (status == 'solved' || active_element == null) return;
-	let pt = get('puzzle_type').value;
 	let shift = event.originalEvent.getModifierState("Shift"),
 		control = event.originalEvent.getModifierState("Control");
 
@@ -237,7 +239,6 @@ function set_active(elt)
 
 function toggle_controls(state) // state = null, true, or false
 {
-	let pt = get('puzzle_type').value;
 	let cdiv = get('controls_div');
 
 	let val; // whether controls should be on or off
@@ -303,11 +304,6 @@ $(document).mouseup(function (event) {
 })
 
 $(document).mousemove(function (event) {
-	let pt_elt = get('puzzle_type');
-	if (!pt_elt) return;
-
-	let pt = pt_elt.value;
-	if (!pt || pt == 'none') return;
 	if (PUZZLE_TYPES[pt].properties.border && mouse_down)
 	{
 		mouse_x = event.pageX - window.scrollX;
@@ -393,8 +389,6 @@ function reset_button_callback()
 	get('controls_div').innerHTML = '';
 	get('controls_button').innerHTML = 'Show controls';
 
-	let pt = get('puzzle_type').value;
-
 	// if not already solved, remove all puzzle data
 	if (status == 'unsolved')
 		set_status('unsolved', switching_types=false);
@@ -410,7 +404,6 @@ function reset_button_callback()
 
 function change_status()
 {
-	let pt = get('puzzle_type').value;
 	if (pt == 'none')
 		set_status('none');
 	else
@@ -452,7 +445,6 @@ function set_status(new_status, switching_types=false)
 
 		if (switching_types)
 		{
-			let pt = get('puzzle_type').value;
 			make_params(PUZZLE_TYPES[pt].params);
 			display_grid(get_param_values());
 			display_example_buttons();
@@ -472,7 +464,6 @@ function set_status(new_status, switching_types=false)
 // gets default parameter dict for the current puzzle type selected
 function get_default_param_values()
 {
-	let pt = get('puzzle_type').value;
 	let values = {};
 	for (let [key, dict] of Object.entries(PUZZLE_TYPES[pt].params))
 		values[key] = dict.default;
@@ -482,7 +473,6 @@ function get_default_param_values()
 // gets parameter dict for the current state
 function get_param_values() // precondition: status != 'none'
 {
-	let pt = get('puzzle_type').value;
 	let values = {};
 	for (let [key, imp] of Object.entries(IMPS))
 		values[key] = imp.encode_input();
@@ -503,7 +493,6 @@ function display_grid(param_dict) // sets the value of grid_div to the default a
 	if (param_dict == undefined)
 		param_dict = get_param_values();
 
-	let pt = get('puzzle_type').value;
 	let border = PUZZLE_TYPES[pt].properties.border;
 	let outside = PUZZLE_TYPES[pt].properties.outside;
 	let U = outside.substring(0,1) == '1',
@@ -620,7 +609,6 @@ function load_puzzle(puzzle)
 
 function show_example(idx)
 {
-	let pt = get('puzzle_type').value;
 	if (!EXAMPLES[pt]) return;
 	let example = EXAMPLES[pt][idx];
 	if (!example) return;
@@ -634,7 +622,6 @@ function show_example(idx)
 
 function display_example_buttons()
 {
-	let pt = get('puzzle_type').value;
 	if (EXAMPLES[pt] == undefined)
 		get('examples_div').innerHTML = '';
 	else
@@ -654,7 +641,6 @@ function display_example_buttons()
 function parse_input()
 {
 	// just shove all the data into a JSON object
-	let pt = get('puzzle_type').value;
 	let puzzle = {
 		param_values: get_param_values(),
 		grid: {}
@@ -681,7 +667,6 @@ function parse_input()
 
 function solve_puzzle()
 {
-    let pt = get('puzzle_type').value;
     if (pt == 'none')
         return;
 
