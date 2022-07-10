@@ -1504,7 +1504,54 @@ class YajikazuElf extends InvertSolutionZOrder(
 	}
 }
 
+class CustomElf extends Elf {
+	handle_input(key, modifiers)
+    {
+    	if (modifiers.shift)
+       	{
+       		let rg = selected_range;
+       		if (rg) // dealing with the whole rectangle selected
+       		{
+       			let up,down,left,right;
+       			if (key == 'Enter') {up=true;down=true;left=true;right=true;}
+       			if (key == 'ArrowUp') up=true;
+       			if (key == 'ArrowDown') down=true;
+       			if (key == 'ArrowLeft') left=true;
+       			if (key == 'ArrowRight') right=true;
+       			
+   				for (let j=rg[2]; j<=rg[3]; j+=2)
+   				{
+   					if (up) ELVES[`${rg[0]},${j}`].toggle_border('ArrowUp');
+   					if (down) ELVES[`${rg[1]},${j}`].toggle_border('ArrowDown');
+   				}
+   				for (let i=rg[0]; i<=rg[1]; i+=2)
+   				{
+   					if (left) ELVES[`${i},${rg[2]}`].toggle_border('ArrowLeft');
+   					if (right) ELVES[`${i},${rg[3]}`].toggle_border('ArrowRight');
+   				}
+       		}
+       		else if (nav_keys.includes(key)) // only dealing with this cell
+       			this.toggle_border(key);
+       	} else {
+					this.puzzle_elt.innerHTML += key;
+				 }
+			super.handle_input(key, modifiers);
+    }
+
+    encode_input()
+    {
+			let encoding = {};
+			for (let border_id of Object.keys(this.borders))
+					if (this.puzzle_borders[border_id].style.backgroundColor == 'black')
+							encoding[this.borders[border_id].id] = 'black';
+			const innerHtml = this.puzzle_elt.innerHTML;
+			encoding[`${this.i},${this.j}`] = innerHtml ? innerHtml : undefined;
+			return encoding;
+    }
+}
+
 let elf_types = {
+	custom: CustomElf,
 	akari: AkariElf,
 	aquarium: IntBordersElf(),
 	balanceloop: DirectSum(

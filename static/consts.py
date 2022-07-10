@@ -7,11 +7,13 @@ cats = {
 	'num': 'Number placement',
 	'obj': 'Object placement',
 	'lsq': 'Latin square',
+	'custom': 'Custom',
 }
 
 types = [
     # 'aho',
     # 'amibo',
+    {'value': 'custom', 'name': 'Custom', 'cat': 'custom'},
     {'value': 'akari', 'name': 'Akari', 'cat': 'obj'},
 	{'value': 'aquarium', 'name': 'Aquarium', 'cat': 'shade'},
 	{'value': 'balanceloop', 'name': 'Balance Loop', 'cat': 'loop'},
