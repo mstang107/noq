@@ -35,6 +35,9 @@ def parse_shading(shading):
             curr_num = 0
     if curr_num > 0: # add last string
         clue.append(curr_num)
+
+    if clue == []:
+        clue = [0]        
     return sorted(clue)
 
 def pattern_matches(q_pattern, pattern):
@@ -45,12 +48,15 @@ def pattern_matches(q_pattern, pattern):
             q_pattern = [1, '?', 3] and
             pattern = [1, 1, 3]
         returns True.
+
+        Here q_pattern is a clue in the puzzle, and
+        pattern is the result of parsing a particular shading candidate.
     '''
-    if pattern == [0]: # note: [0] doesn't match ['?']
-        return q_pattern == [0]
+    if q_pattern == [0]: # note: [0] doesn't match ['?']
+        return pattern == [0]
     else:
         return len(q_pattern) == len(pattern) and \
-            all( q_pattern.count(int(n)) <= pattern.count(int(n)) for n in '12345678' )
+            all(q_pattern.count(n) <= pattern.count(n) for n in range(1, 9))
 
 def solve(E):
     shading_solver = RectangularGridShadingSolver(E.R, E.C)

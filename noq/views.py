@@ -30,8 +30,6 @@ for pt_dict in PUZZLE_TYPES:
 for cat in types_by_cat:
     types_by_cat[cat] = sorted(types_by_cat[cat], key=lambda d: d['name'])
 
-print(types_by_cat)
-
 urlpatterns.append(
     path(route='',
         view=lambda request: 

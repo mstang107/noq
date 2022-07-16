@@ -1,7 +1,7 @@
 from ..claspy import *
 from datetime import datetime
 
-MAX_SOLUTIONS_TO_FIND = 10
+MAX_SOLUTIONS_TO_FIND = 1000
 
 def rc_to_grid(r, c):
     return f'{2*r+1},{2*c+1}'
