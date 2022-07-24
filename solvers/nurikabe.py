@@ -22,9 +22,7 @@ def solve(E):
         (max(number_clues.values()) if number_clues else 0)
     
     if len(clue_cell_id) == 0:
-        raise ValueError('The grid is empty.')
-    elif len(clue_cell_id) == 1:
-        raise ValueError('Are you sure you put in all the clues?')
+        raise ValueError('Error: No clues')
 
     # Restrict the number of bits used for IntVar.
     set_max_val(max(len(clue_cell_id), max_clue))

@@ -2,6 +2,62 @@ let image_url = (str) => str ? `url('static/noq/images/${str + (/^.*\.png$/.test
 const nav_keys = ['ArrowUp','ArrowRight','ArrowDown','ArrowLeft'];
 const del_keys = ['Backspace','Delete','Escape'];
 const COLORS = ['black','darkgray','lightblue'];
+const CLIPBOARD_SYMBOLS = {
+	'1': '│',
+	'-': '─',
+	'L': '└',
+	'J': '┘',
+	'+': '┼',
+	'7': '┐',
+	'r': '┌',
+
+	'||': '║',
+	'=': '=',
+	
+	'bulb': 'O',
+
+	'1w': '⌽',
+	'-w': '⦵',
+
+	'black_circle': '⬤',
+	'white_circle': '◯',
+
+	'n':'◡',
+	's':'◠',
+	'w':')',
+	'e':'(',
+	'nw':'╯',
+	'ne':'╰',
+	'sw':'╮',
+	'se':'╭',
+
+	'top-left':'◤',
+	'top-right':'◥',
+	'bottom-left':'◣',
+	'bottom-right':'◢',
+
+	'↑':'↑',
+	'←':'←',
+	'→':'→',
+	'↓':'↓',
+	'↱':'↱',
+	'⬐':'⬐',
+	'↳':'↳',
+	'⬑':'⬑',
+	'↴':'↴',
+	'↰':'↰',
+	'↲':'↲',
+	'⬏':'⬏',
+
+	'tree':'🌲',
+	'tent':'⛺',
+
+	// 'white_circle_u':'Ȯ',
+	// 'white_circle_r':'⟥',
+	// 'white_circle_d':'Ọ',
+	// 'white_circle_l':'⟤', TODO find better symbols for these if possible; and also make hotaru copy-to-clipboard actually work
+					// (the issue is that generate_copy_td doesn't work well with DirectSum. actually DirectSum just sorta sucks in general imo)
+}
 
 function add_json_objects(d1, d2)
 {
@@ -72,11 +128,13 @@ function toggle_background_image(elt, img) // used in Spiral Galaxies
 			{
 				neighbor.raw_image_url = '';
 				neighbor.style.backgroundImage = '';
+				neighbor.parent.puzzle_image_str = '';
 			}
 		}
 
 		elt.raw_image_url = img;
 		elt.style.backgroundImage = image_url(img);
+		elt.parent.puzzle_image_str = img;
 	}
 }
 
@@ -119,7 +177,7 @@ class Elf
 			}
 
 		this.puzzle_elt = elt.querySelector('.puzzle_cell');
-		this.puzzle_elt.i = this.i; this.puzzle_elt.j = this.j; // embed this data for convenience
+		this.puzzle_elt.i = this.i; this.puzzle_elt.j = this.j; this.puzzle_elt.parent = this; // embed this data for convenience
 		this.default_image_url = default_image_url;
 		this.puzzle_elt.style.backgroundImage = image_url(this.default_image_url);
 		
@@ -150,6 +208,7 @@ class Elf
 			{
 				this.puzzle_elt.style = '';
 				this.puzzle_elt.style.backgroundImage = image_url(this.default_image_url);
+				this.puzzle_image_str = '';
 				this.puzzle_elt.innerHTML = '';
 				this.key = null;
 			}
@@ -162,7 +221,10 @@ class Elf
 		else if (/^[0-9\?]+$/.test(str))
 			this.puzzle_elt.innerHTML = str;
 		else if (/^.*\.png$/.test(str))
+		{
 			this.puzzle_elt.style.backgroundImage = image_url(str);
+			this.puzzle_image_str = str.substring(0, str.length-4); // remove `.png` from str
+		}
 		else
 			this.puzzle_elt.innerHTML = str;
 	}
@@ -173,13 +235,17 @@ class Elf
 		else if (/^[0-9]+$/.test(str))
 			this.solution_elt.innerHTML = str;
 		else if (/^.+\.png$/.test(str))
+		{
 			this.solution_elt.style.backgroundImage = image_url(str);
+			this.solution_image_str = str.substring(0, str.length-4); // remove `.png` from str
+		}
 		else
 			this.solution_elt.innerHTML = str;
 	}
 	reset()
 	{
 		this.puzzle_elt.style.backgroundImage = image_url(this.default_image_url);
+		this.puzzle_image_str = '';
 		this.puzzle_elt.style.backgroundColor = '';
 		this.puzzle_elt.innerHTML = '';
 		for (let obj of Object.values(this.puzzle_borders))
@@ -189,6 +255,7 @@ class Elf
 	reset_solution()
 	{
 		this.solution_elt.style.backgroundImage = '';
+		this.solution_image_str = '';
 		this.solution_elt.style.backgroundColor = '';
 		this.solution_elt.innerHTML = '';
 		for (let obj of Object.values(this.solution_borders))
@@ -237,17 +304,30 @@ class Elf
 	    	for (let key of nav_keys)
 	    	{
 	    		let border_color = this.solution_borders[key].style.backgroundColor || this.puzzle_borders[key].style.backgroundColor;
-	    		if (border_color)
+	    		if (COLORS.includes(border_color) && !td.style[key_to_border[key]])
 	    			td.style[key_to_border[key]] = `1px solid ${border_color}`;
 	    	}
 
-    	// text contents (will often be overwritten)
+	    // text content of cell
     	let contents = this.solution_elt.innerHTML || this.puzzle_elt.innerHTML;
-    	if (contents)
-    		td.innerHTML = contents;
 
-    	// font family
-    	td.style.fontFamily = 'Consolas';
+		if (CLIPBOARD_SYMBOLS[this.solution_image_str])
+			td.innerHTML = CLIPBOARD_SYMBOLS[this.solution_image_str];
+
+		else if (CLIPBOARD_SYMBOLS[this.puzzle_image_str])
+			td.innerHTML = CLIPBOARD_SYMBOLS[this.puzzle_image_str];
+
+    	else if (contents)
+    	{
+    		td.innerHTML = "'"+contents;
+
+    		// flip text color to white, if the cell is black (for e.g. Akari, Shakashaka)
+    		if (td.style.backgroundColor == 'black')
+    			td.style.color = 'white';
+    	}
+
+		td.style.textAlign = 'center';
+		// td.style.verticalAlign = 'middle'; // TODO why doesn't this work?? :(
 
     	return td;
     }
@@ -460,10 +540,12 @@ function ImageElf(dict, controls_dict, styles={})
 			}
 			return true;
 		}
+
 		load_example(str)
 		{
 			return this.handle_input(str, null);
 		}
+
 		encode_input()
 		{
 			return this.key;
@@ -1183,11 +1265,9 @@ class SpiralGalaxiesElf extends Elf
 
 	load_example(str)
 	{
-		this.key = {num : str.substring(0,1), dir: str.substring(1,2)};
-
-		this.puzzle_elt.innerHTML = this.key.num;
-		this.puzzle_elt.style.backgroundImage = image_url(this.dict[this.key.dir]);
+		// TODO
 	}
+
 	encode_input()
 	{
 		let riu = this.puzzle_elt.raw_image_url;

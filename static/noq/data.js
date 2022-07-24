@@ -1,18 +1,18 @@
 const puzzle_types = {
 	aho: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	amibo: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	akari: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	aquarium: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '1001', border: true }
 		},
 	balanceloop: {
@@ -24,28 +24,28 @@ const puzzle_types = {
 		properties: { outside: '1001', border: false }
 		},
 	binairo: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	castlewall: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false },
 		},
 	cave: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10},
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10},
 			'Product': {name: 'Product', value:false} },
 		properties: { outside: '0000', border: false },
 		},
 	chocona: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: true },
 		},
     countryroad: {
-        params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+        params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
         properties: { outside: '0000', border: true }
         },
 	doppelblock: {
-		params: { n: {name: 'Grid size', value:6} },
+		params: { n: {name: 'Grid size', value: 6} },
 		properties: { outside: '1001', border: false }
 		},
     easyas: {
@@ -53,78 +53,78 @@ const puzzle_types = {
     	properties: { outside: '1111', border: false }
 		},
 	fillomino: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	gokigen: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false },
 		display: {no_border_lines: true}
 		},
 	hashi: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	heteromino: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	heyawake: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: true }
 		},
 	hitori: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	hotaru: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false },
 		display: {no_border_lines: true}
 		},
 	kakuro: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false },
 		},
 	kurotto: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	kuromasu: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	lits: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: true }
 		},
 	magnets: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '1111', border: true }
 		},
 	masyu: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	minesweeper: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	moonsun: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: true }
 		},
 	nagare: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
     nanro: {
-        params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+        params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
         properties: { outside: '0000', border: true }
         },
     ncells:
         {
-        params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10}, region_size: {name: 'Size of region', value:5} },
+        params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10}, region_size: {name: 'Size of region', value: 5} },
         properties: { outside: '0000', border: true }
         },
 	nonogram: {
@@ -136,44 +136,44 @@ const puzzle_types = {
 		properties: { outside: '0000', border: true }
 		},
 	numberlink: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10},
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10},
 			'Use all cells': {name: 'Use all cells', value:false} },
 		properties: { outside: '0000', border: false },
 		},
     nuribou: {
-        params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+        params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
         properties: { outside: '0000', border: false }
         },
 	nurikabe: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	nurimisaki: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	nonogram: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '1001', border: false }
 		},
     onsen: {
-        params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+        params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
         properties: { outside: '0000', border: true }
 		},
 	rippleeffect: {
-        params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+        params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
         properties: { outside: '0000', border: true }
 		},
 	shakashaka: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	shikaku: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	shimaguni: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: true }
 		},
 	skyscrapers: {
@@ -181,25 +181,25 @@ const puzzle_types = {
 		properties: { outside: '1111', border: false }
 		},
 	slitherlink: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	spiralgalaxies: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
-		properties: { outside: '0000', border: true }
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
+		properties: { outside: '0000', border: false }
 		},
 	starbattle: {
-		params: { n: {name: 'Grid size', value:10}, stars: {name: 'Number of stars', value:2} },
+		params: { n: {name: 'Grid size', value: 10}, stars: {name: 'Number of stars', value:2} },
 		properties: { outside: '0000', border: true }
 		},
 	statuepark: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10}, 
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10}, 
 				  shapeset: {name: 'Shape set', value:'Tetrominoes', options:['Tetrominoes', 'Pentominoes', 'Double Tetrominoes']} 
 				},
 		properties: { outside: '0000', border: false }
 		},
 	stostone: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: true }
 		},
 	sudoku: {
@@ -211,31 +211,31 @@ const puzzle_types = {
 		properties: { outside: '0000', border: false }
 		},
 	tapa: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	tatamibari: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	tents: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '1001', border: false }
 		},
 	tll: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	yajilin: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	yajilin_transparent: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	yajisankazusan: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
 	yinyang: {
@@ -245,9 +245,6 @@ const puzzle_types = {
 };
 
 const examples = {
-	// akari: {
-	// 	1: {data: {"param_values":{"r":"10","c":"10"},"grid":{"1,9":"2","5,9":"black"}}}
-	// }, [a random bad example i wrote to test things --michael, 8/3/21]
 	cave: {
 		1: {
 			data: {"param_values":{"r":11,"c":11},"grid":{"1,1":"9","1,5":"7",
@@ -283,14 +280,6 @@ const examples = {
 		1: {
 			data: {"param_values":{"r":"6","c":"6"},"grid":{"3,1":"1","3,3":"5","3,5":"2","3,9":"5","5,3":"1","5,9":"1","7,3":"2","7,9":"5","9,3":"1","9,7":"5","9,9":"1","9,11":"2"}}
 		},
-		// these don't run in time :( :(
-		// 1: {
-		// 	data: {"param_values":{"r":"15","c":"15"},"grid":{"1,9":"1","1,21":"5","3,11":"2","3,19":"3","5,13":"2","5,17":"4","7,3":"3","7,5":"5","7,7":"4","7,9":"1","7,15":"5","7,21":"3","7,23":"4","7,25":"5","7,27":"2","9,1":"4","9,11":"1","9,15":"3","9,19":"3","9,29":"4","11,1":"2","11,13":"2","11,15":"1","11,17":"3","11,29":"6","13,1":"6","13,15":"2","13,29":"3","15,1":"3","15,15":"6","15,29":"6","17,3":"3","17,15":"5","17,27":"3","19,5":"3","19,7":"5","19,9":"5","19,11":"6","19,13":"1","19,15":"2","19,17":"4","19,19":"3","19,21":"5","19,23":"3","19,25":"3","21,3":"6","21,15":"2","21,27":"4","23,3":"5","23,15":"5","23,27":"2","25,3":"4","25,15":"4","25,27":"4","27,5":"2","27,13":"1","27,17":"1","27,25":"5","29,7":"4","29,9":"1","29,11":"4","29,19":"4","29,21":"2","29,23":"5"}}
-		// },
-		// 
-		// 2: {
-		// 	data: {"param_values":{"r":"10","c":"10"},"grid":{"3,7":"8","3,9":"1","3,11":"4","3,13":"3","5,3":"6","5,17":"3","7,3":"4","7,15":"4","7,17":"9","9,3":"6","9,17":"7","11,3":"1","11,7":"5","11,9":"4","13,9":"2","13,11":"1","15,3":"3","15,5":"5","15,17":"2","17,3":"6","17,5":"3","17,13":"7","17,15":"2","17,17":"7"}}
-		// }
 	},
 	heyawake: {
 		1: {
@@ -301,22 +290,6 @@ const examples = {
 		1: {
 			data: {"param_values":{"r":"11","c":"11"},"grid":{"1,2":"black","2,3":"black","2,5":"black","1,8":"black","1,12":"black","1,14":"black","0,15":"black","2,15":"black","0,17":"black","2,17":"black","0,19":"black","1,20":"black","4,3":"black","3,6":"black","4,5":"black","3,8":"black","3,12":"black","4,15":"black","3,18":"black","4,17":"black","3,20":"black","5,2":"black","6,3":"black","6,5":"black","5,8":"black","5,12":"black","5,14":"black","6,15":"black","6,17":"black","5,20":"black","8,1":"black","8,3":"black","7,6":"black","8,5":"black","7,8":"black","7,12":"black","8,11":"black","8,15":"black","7,18":"black","8,17":"black","7,20":"black","9,2":"black","10,3":"black","10,5":"black","9,8":"black","10,7":"black","9,10":"black","10,9":"black","10,11":"black","9,14":"black","10,13":"black","10,15":"black","10,17":"black","9,20":"black","10,19":"black","12,3":"black","12,5":"black","12,7":"black","12,9":"black","11,12":"black","11,16":"black","12,15":"black","12,17":"black","12,19":"black","12,21":"black","13,2":"black","14,3":"black","14,5":"black","13,8":"black","13,10":"black","13,12":"black","13,14":"black","14,15":"black","14,17":"black","13,20":"black","16,3":"black","15,6":"black","16,5":"black","15,8":"black","15,10":"black","15,12":"black","16,11":"black","16,15":"black","15,18":"black","16,17":"black","15,20":"black","17,2":"black","18,1":"black","18,3":"black","18,5":"black","17,8":"black","17,10":"black","17,12":"black","17,14":"black","18,13":"black","18,15":"black","18,17":"black","17,20":"black","20,3":"black","19,6":"black","20,5":"black","19,8":"black","19,10":"black","20,11":"black","20,15":"black","19,18":"black","20,17":"black","19,20":"black","21,2":"black","22,3":"black","22,5":"black","21,8":"black","22,7":"black","21,12":"black","21,14":"black","21,20":"black"}}
 		}
-		/*1: {
-			data: {"param_values":{"r":"6","c":"6"},"grid":{"2,7":"black","3,6":"black",
-			"3,8":"black","4,5":"black","5,4":"black","5,8":"black","6,1":"black","6,5":
-			"black","6,9":"black","7,2":"black","7,6":"black","7,8":"black","7,10":"black",
-			"8,11":"black","9,2":"black","9,6":"black","9,8":"black","10,3":"black","10,5":
-			"black","10,9":"black","11,4":"black","11,10":"black"}},
-			link: null
-		},
-		2: {
-			data: {"param_values":{"r":"6","c":"6"},"grid":{"1,10":"black","2,3":"black",
-			"2,5":"black","2,7":"black","3,2":"black","3,8":"black","3,10":"black","4,1":
-			"black","4,3":"black","4,5":"black","5,6":"black","5,8":"black","5,10":"black",
-			"6,3":"black","6,5":"black","6,9":"black","7,2":"black","7,8":"black","8,5":
-			"black","8,7":"black","8,9":"black","8,11":"black","9,2":"black","9,4":"black",
-			"10,5":"black","10,7":"black","11,2":"black","11,8":"black"}},
-		}*/
 	},
 	masyu: {
 		1: {
@@ -370,7 +343,8 @@ const examples = {
 	},
     onsen: {
         1: {
-            data: {"param_values":{"r":"9","c":"15"},"grid":{"0,1":"black","1,2":"black","1,0":"black","0,3":"black","0,5":"black","0,7":"black","2,7":"black","0,9":"black","1,10":"black","2,9":"black","0,11":"black","0,13":"black","0,15":"black","1,16":"black","0,17":"black","2,17":"black","0,19":"black","2,19":"black","0,21":"black","0,23":"black","2,23":"black","0,25":"black","2,25":"black","0,27":"black","2,27":"black","0,29":"black","1,30":"black","2,29":"black","3,2":"black","3,0":"black","3,6":"black","4,5":"black","4,9":"black","4,11":"black","4,13":"black","3,16":"black","4,15":"black","4,17":"black","3,20":"black","3,22":"black","4,21":"black","4,23":"black","4,25":"black","3,30":"black","4,29":"black","5,2":"black","5,0":"black","5,4":"black","6,3":"black","5,6":"black","5,8":"black","5,10":"black","5,12":"black","6,15":"black","5,18":"black","6,17":"black","5,20":"black","5,26":"black","5,28":"black","5,30":"black","8,1":"black","7,0":"black","7,4":"black","7,6":"black","7,8":"black","7,7":"7","7,10":"black","7,12":"black","7,14":"black","8,15":"black","8,17":"black","7,20":"black","7,23":"4","7,26":"black","7,28":"black","7,30":"black","9,2":"black","9,0":"black","9,4":"black","9,6":"black","9,8":"black","9,10":"black","9,12":"black","10,13":"black","10,15":"black","9,18":"black","9,20":"black","10,19":"black","10,23":"black","9,26":"black","9,28":"black","10,27":"black","9,30":"black","11,2":"black","11,0":"black","11,4":"black","12,3":"black","11,6":"black","11,8":"black","12,7":"black","11,10":"black","12,13":"black","11,16":"black","12,15":"black","11,18":"black","11,20":"black","11,22":"black","11,24":"black","11,26":"black","11,30":"black","13,0":"black","13,4":"black","14,5":"black","14,7":"black","13,10":"black","14,9":"black","13,12":"black","14,13":"black","14,15":"black","13,18":"black","14,17":"black","13,20":"black","13,22":"black","14,21":"black","13,24":"black","13,26":"black","14,25":"black","14,27":"black","13,30":"black","14,29":"black","16,1":"black","15,0":"black","15,4":"black","16,3":"black","15,8":"black","15,10":"black","16,11":"black","16,13":"black","16,15":"black","15,18":"black","16,17":"black","15,22":"black","16,21":"black","16,25":"black","15,28":"black","16,27":"black","15,30":"black","18,1":"black","17,0":"black","18,3":"black","18,5":"black","17,8":"black","18,7":"black","18,9":"black","18,11":"black","18,13":"black","17,16":"black","18,15":"black","18,17":"black","17,20":"black","18,19":"black","18,21":"black","17,24":"black","18,23":"black","18,25":"black","18,27":"black","17,30":"black","18,29":"black"}}
+            data: {"param_values":{"r":"9","c":"15"},"grid":{"0,1":"black","1,2":"black","1,0":"black","0,3":"black","0,5":"black","0,7":"black","2,7":"black","0,9":"black","1,10":"black","2,9":"black","0,11":"black","0,13":"black","0,15":"black","1,16":"black","0,17":"black","2,17":"black","0,19":"black","2,19":"black","0,21":"black","0,23":"black","2,23":"black","0,25":"black","2,25":"black","0,27":"black","2,27":"black","0,29":"black","1,30":"black","2,29":"black","3,2":"black","3,0":"black","3,6":"black","4,5":"black","4,9":"black","4,11":"black","4,13":"black","3,16":"black","4,15":"black","4,17":"black","3,20":"black","3,22":"black","4,21":"black","4,23":"black","4,25":"black","3,30":"black","4,29":"black","5,2":"black","5,0":"black","5,4":"black","6,3":"black","5,6":"black","5,8":"black","5,10":"black","5,12":"black","6,15":"black","5,18":"black","6,17":"black","5,20":"black","5,26":"black","5,28":"black","5,30":"black","8,1":"black","7,0":"black","7,4":"black","7,6":"black","7,8":"black","7,7":"7","7,10":"black","7,12":"black","7,14":"black","8,15":"black","8,17":"black","7,20":"black","7,23":"4","7,26":"black","7,28":"black","7,30":"black","9,2":"black","9,0":"black","9,4":"black","9,6":"black","9,8":"black","9,10":"black","9,12":"black","10,13":"black","10,15":"black","9,18":"black","9,20":"black","10,19":"black","10,23":"black","9,26":"black","9,28":"black","10,27":"black","9,30":"black","11,2":"black","11,0":"black","11,4":"black","12,3":"black","11,6":"black","11,8":"black","12,7":"black","11,10":"black","12,13":"black","11,16":"black","12,15":"black","11,18":"black","11,20":"black","11,22":"black","11,24":"black","11,26":"black","11,30":"black","13,0":"black","13,4":"black","14,5":"black","14,7":"black","13,10":"black","14,9":"black","13,12":"black","14,13":"black","14,15":"black","13,18":"black","14,17":"black","13,20":"black","13,22":"black","14,21":"black","13,24":"black","13,26":"black","14,25":"black","14,27":"black","13,30":"black","14,29":"black","16,1":"black","15,0":"black","15,4":"black","16,3":"black","15,8":"black","15,10":"black","16,11":"black","16,13":"black","16,15":"black","15,18":"black","16,17":"black","15,22":"black","16,21":"black","16,25":"black","15,28":"black","16,27":"black","15,30":"black","18,1":"black","17,0":"black","18,3":"black","18,5":"black","17,8":"black","18,7":"black","18,9":"black","18,11":"black","18,13":"black","17,16":"black","18,15":"black","18,17":"black","17,20":"black","18,19":"black","18,21":"black","17,24":"black","18,23":"black","18,25":"black","18,27":"black","17,30":"black","18,29":"black"}},
+        	link: 'https://www.mstang.xyz/blog/8/',
         }
     },
     tapa: {

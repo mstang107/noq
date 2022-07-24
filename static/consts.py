@@ -24,17 +24,17 @@ types = [
 	{'value': 'doppelblock', 'name': 'Doppelblock', 'cat': 'lsq'},
 	{'value': 'easyas', 'name': 'Easy As', 'cat': 'lsq'},
 	{'value': 'fillomino', 'name': 'Fillomino', 'cat': 'num'},
-	{'value': 'gokigen', 'name': 'Gokigen (Slant)', 'cat': 'num'},	# ??
+	{'value': 'gokigen', 'name': 'Gokigen (Slant)', 'cat': 'obj'},	# is this the right category??
 	{'value': 'hashi', 'name': 'Hashi (Bridges)', 'cat': 'loop'},
 	{'value': 'heteromino', 'name': 'Heteromino', 'cat': 'region'},
 	{'value': 'heyawake', 'name': 'Heyawake', 'cat': 'shade'},
 	{'value': 'hitori', 'name': 'Hitori', 'cat': 'shade'},
-	{'value': 'hotaru', 'name': 'Hotaru', 'cat': 'loop'},
+	{'value': 'hotaru', 'name': 'Hotaru Beam', 'cat': 'loop'},
 	{'value': 'kakuro', 'name': 'Kakuro', 'cat': 'num'},
 	{'value': 'kurotto', 'name': 'Kurotto', 'cat': 'shade'},
 	{'value': 'kuromasu', 'name': 'Kuromasu', 'cat': 'shade'},
 	{'value': 'lits', 'name': 'LITS', 'cat': 'shade'},
-	{'value': 'magnets', 'name': 'Magnets', 'cat': 'obj'},			# ??
+	{'value': 'magnets', 'name': 'Magnets', 'cat': 'obj'},			# is this the right category??
 	{'value': 'masyu', 'name': 'Masyu', 'cat': 'loop'},
 	{'value': 'minesweeper', 'name': 'Minesweeper', 'cat': 'obj'},
 	{'value': 'moonsun', 'name': 'Moon-or-Sun', 'cat': 'loop'},
@@ -51,7 +51,7 @@ types = [
 	{'value': 'nurimisaki', 'name': 'Nurimisaki', 'cat': 'shade'},
 	{'value': 'onsen', 'name': 'Onsen', 'cat': 'loop'},
 	{'value': 'rippleeffect', 'name': 'Ripple Effect', 'cat': 'num'},
-	{'value': 'shakashaka', 'name': 'Shakashaka', 'cat': 'shade'},	# ??
+	{'value': 'shakashaka', 'name': 'Shakashaka', 'cat': 'shade'},	# is this the right category??
 	{'value': 'shikaku', 'name': 'Shikaku', 'cat': 'region'},
 	{'value': 'shimaguni', 'name': 'Shimaguni (Islands)', 'cat': 'shade',
 		'aliases': ['islands']},

@@ -1,20 +1,26 @@
 let ELF_TYPES, PUZZLE_TYPES, EXAMPLES, NAV_KEYS, ELVES = {}, IMPS = {};
-const SCRIPTS_TO_LOAD = ['noq/elves.js', 'noq/data.js', 'noq/imps.js'];
 
-// load helper scripts (courtesy of https://stackoverflow.com/questions/11803215/)
+// load helper scripts, courtesy https://stackoverflow.com/questions/11803215/
+const SCRIPTS_TO_LOAD = [
+	'noq/elves.js',
+	'noq/data.js',
+	'noq/imps.js'
+];
 $.getMultiScripts = function(arr, path) {
     let _arr = $.map(arr, function(x) {return $.getScript((path||"")+x);});
     _arr.push($.Deferred(function(d){$(d.resolve );}));
     return $.when.apply($,_arr); };
 $.getMultiScripts(SCRIPTS_TO_LOAD, 'static/').done(function() {
 	// process imported scripts here
+
 	ELF_TYPES = elf_types;
 	IMP_TYPES = imp_types;
 	PUZZLE_TYPES = puzzle_types;
 	EXAMPLES = examples;
 	NAV_KEYS = nav_keys;
 
-	set_status('unsolved', switching_types=true);
+	make_params(PUZZLE_TYPES[pt].params);
+	set_unsolved();
 });
 
 
@@ -35,14 +41,14 @@ function make_elt(type, class_name, parent, innerHTML)
 
 // courtesy https://stackoverflow.com/questions/2057682/
 function get_text_width(txt, margin_px=1){
-    if(get_text_width.c === undefined){
-        get_text_width.c=document.createElement('canvas');
-        get_text_width.ctx=get_text_width.c.getContext('2d');
+    if (get_text_width.c === undefined){
+        get_text_width.c = document.createElement('canvas');
+        get_text_width.ctx = get_text_width.c.getContext('2d');
     }
    	var fontspec = '20px ' + 'arial';
-    if(get_text_width.ctx.font !== fontspec)
+    if (get_text_width.ctx.font !== fontspec)
         get_text_width.ctx.font = fontspec;
-    return (margin_px+get_text_width.ctx.measureText(txt).width) + 'px';
+    return (margin_px + get_text_width.ctx.measureText(txt).width) + 'px';
 }
 
 /////////////
@@ -50,16 +56,16 @@ function get_text_width(txt, margin_px=1){
 /////////////
 function create_copy_text()
 {
-	if (status == 'none' || ROWS == null || COLS == null)
+	if (ROWS == null || COLS == null)
 		return null;
 
 	// build text as an html table using the grid
 	let text = "<table><tbody>";
-	for (let r=Ubound+1; r<=Dbound; r+=2)
+	for (let r=BOUNDS.U+1; r<=BOUNDS.D; r+=2)
 	{
 		text += "<tr>";
-		for (let c=Lbound+1; c<=Rbound; c+=2)
-			text += ELVES[`${r},${c}`].generate_copy_td().outerHTML; // TODO fill this in for all the Elves
+		for (let c=BOUNDS.L+1; c<=BOUNDS.R; c+=2)
+			text += ELVES[`${r},${c}`].generate_copy_td().outerHTML;
 		text += "</tr>";
 	}
 	text += "</tbody></table>";
@@ -113,14 +119,11 @@ const COL_LIMIT = 30;
 
 let active_element = null;
 let current_request = null;
-let status = 'none';
+let status = 'unsolved';
 
 let ROWS = null;
 let COLS = null;
-let Ubound = null;
-let Rbound = null;
-let Dbound = null;
-let Lbound = null;
+let BOUNDS = null;
 
 let shift_click_corner = null;
 let selected_range = null; // null or an array [i_min, i_max, j_min, j_max]
@@ -389,85 +392,49 @@ function reset_button_callback()
 	get('controls_div').innerHTML = '';
 	get('controls_button').innerHTML = 'Show controls';
 
-	// if not already solved, remove all puzzle data
-	if (status == 'unsolved')
-		set_status('unsolved', switching_types=false);
-
-	// else, restore to previous state before the solve
-	else if (status == 'solved')
-	{
-		for (let elt_id of Object.keys(ELVES))
-			ELVES[elt_id].reset_solution();
-		set_status('unsolved', switching_types=false);
-	}
+	set_unsolved();
 }
 
-function change_status()
-{
-	if (pt == 'none')
-		set_status('none');
-	else
-		set_status('unsolved', switching_types=true);
-}
-
-function set_status(new_status, switching_types=false)
+function set_unsolved()
 {
 	old_status = status;
-	status = new_status;
-	if (new_status == 'none')
-	{
-		get('puzzle_div').style.visibility = 'hidden';
-		get('buttons_div').style.visibility = 'hidden';
-		toggle_controls(false);
-		if (current_request)
-		{
-			current_request.abort();
-			current_request.stopped = true;
-			current_request = null;
-		}
-		spinner_pos = null;
-		let solution_num, solutions, num_solutions;
-	}
-	else if (new_status == 'unsolved')
-	{
-		get('solve_button').disabled = false;
-		get('header_div').innerHTML = '';
-		get('puzzle_div').style.visibility = 'inherit';
-		get('buttons_div').style.visibility = 'inherit';
-		if (current_request)
-		{
-			current_request.abort();
-			current_request.stopped = true;
-			current_request = null;
-		}
-		spinner_pos = null;
-		let solution_num, solutions, num_solutions;
+	status = 'unsolved';
 
-		if (switching_types)
-		{
-			make_params(PUZZLE_TYPES[pt].params);
-			display_grid(get_param_values());
-			display_example_buttons();
-			toggle_controls(false);
-		}
-		else if (!switching_types && old_status != 'solved') // resetting
-		{
-			display_grid(get_param_values());
-			display_example_buttons();
-			toggle_controls(false);
-		}
+	get('header_div').innerHTML = '';
+	get('solve_button').disabled = false;
+
+	let example_buttons = document.getElementsByClassName('example_button');
+	for (let i=0; i<example_buttons.length; ++i)
+		example_buttons[i].disabled = false;
+
+	if (current_request)
+	{
+		current_request.abort();
+		current_request.stopped = true;
+		current_request = null;
 	}
-	else if (new_status == 'solved')
-		get('solve_button').disabled = true;	
+	spinner_pos = null;
+	let solution_num, solutions, num_solutions;
+
+	for (let elt_id of Object.keys(ELVES))
+		ELVES[elt_id].reset_solution();
+
+	if (old_status != 'solved')
+	{
+		display_grid(get_param_values());
+		display_example_buttons();
+		toggle_controls(false);
+	}
 }
 
-// gets default parameter dict for the current puzzle type selected
-function get_default_param_values()
+function set_solved()
 {
-	let values = {};
-	for (let [key, dict] of Object.entries(PUZZLE_TYPES[pt].params))
-		values[key] = dict.default;
-	return values;
+	status = 'solved';
+	get('solve_button').disabled = true;
+
+	let example_buttons = document.getElementsByClassName('example_button');
+	for (let i=0; i<example_buttons.length; ++i)
+		example_buttons[i].disabled = true;
 }
 
 // gets parameter dict for the current state
@@ -480,6 +447,7 @@ function get_param_values() // precondition: status != 'none'
 }
 
 // creates the Imps, set to the given values (and thus the param HTML elements)
+// only called once, on initialization
 function make_params(param_dict)
 {
 	IMPS = {};
@@ -490,16 +458,11 @@ function make_params(param_dict)
 
 function display_grid(param_dict) // sets the value of grid_div to the default and assigns Elves
 {
-	if (param_dict == undefined)
+	if (param_dict === undefined)
 		param_dict = get_param_values();
 
 	let border = PUZZLE_TYPES[pt].properties.border;
 	let outside = PUZZLE_TYPES[pt].properties.outside;
-	let U = outside.substring(0,1) == '1',
-		R = outside.substring(1,2) == '1',
-		D = outside.substring(2,3) == '1',
-		L = outside.substring(3,4) == '1';
-
 	let r = param_dict.r || param_dict.n || 9; // 9 = default for Sudoku
 	let c = param_dict.c || param_dict.n || 9;
 
@@ -515,16 +478,18 @@ function display_grid(param_dict) // sets the value of grid_div to the default a
 	// set global vars
 	ROWS = r;
 	COLS = c;
-	Ubound = U ? -2 : 0;
-	Rbound = R ? 2*c+2 : 2*c;
-	Dbound = D ? 2*r+2 : 2*r;
-	Lbound = L ? -2 : 0;
+	BOUNDS = {
+		U: outside.substring(0,1) == '1' ? -2 : 0,
+		R: outside.substring(1,2) == '1' ? 2*COLS+2 : 2*COLS,
+		D: outside.substring(2,3) == '1' ? 2*ROWS+2 : 2*ROWS,
+		L: outside.substring(3,4) == '1' ? -2 : 0,
+	}
 
 	let ans = "";
-	for (let i=Ubound; i<=Dbound; ++i)
+	for (let i=BOUNDS.U; i<=BOUNDS.D; ++i)
 	{
 		ans += "<div class='grid_row'>";
-		for (let j=Lbound; j<=Rbound; ++j)
+		for (let j=BOUNDS.L; j<=BOUNDS.R; ++j)
 		{
 			let parity = 2*((i+2)%2)+((j+2)%2);
 			let is_in_grid = (0<=i&&i<=2*r&&0<=j&&j<=2*c);
@@ -541,22 +506,22 @@ function display_grid(param_dict) // sets the value of grid_div to the default a
 			if (display_settings && display_settings.no_border_lines && parity != 3)
 				display_str = 'visibility: hidden;'; // display=none on border elts
 
-
-			ans += `<div class="container_${obj} noselect" ${hollow_str} style='${color_str}; ${display_str}' id='${id_str}'>
-						<div class="puzzle_${obj} noselect" style='${vis_str}; ${display_str}' id='puzzle_${id_str}'></div>
-						<div class="solution_${obj} noselect" style='${vis_str}; ${display_str}' id='solution_${id_str}'></div>
-						<div class="shift_click_${obj}" style='${vis_str}; ${display_str}' id='shift_click_${id_str}'></div>
-					</div>`;
+			ans +=
+				`<div class="container_${obj} noselect" ${hollow_str} style='${color_str}; ${display_str}' id='${id_str}'>
+				<div class="puzzle_${obj} noselect" style='${vis_str}; ${display_str}' id='puzzle_${id_str}'></div>
+				<div class="solution_${obj} noselect" style='${vis_str}; ${display_str}' id='solution_${id_str}'></div>
+				<div class="shift_click_${obj}" style='${vis_str}; ${display_str}' id='shift_click_${id_str}'></div>
+				</div>`;
 		}
 		ans += "</div>";
 	}
 	get('grid_div').innerHTML = ans;
 
-	// add elves to cells only (odd i,j)
+	// add elves to all cells (elements with i, j both odd)
 	// first reset elves
 	ELVES = {};
-	for (let i=Ubound+1; i<=Dbound-1; i+=2)
-		for (let j=Lbound+1; j<=Rbound-1; j+=2)
+	for (let i=BOUNDS.U+1; i<=BOUNDS.D-1; i+=2)
+		for (let j=BOUNDS.L+1; j<=BOUNDS.R-1; j+=2)
 		{
 			let id_str = `${i},${j}`;
 			let borders = {
@@ -584,7 +549,7 @@ function load_puzzle(puzzle)
 	if (!is_json(puzzle))
 		puzzle = JSON.parse(puzzle);
 
-	set_status('unsolved', switching_types=false); // reset the grid
+	set_unsolved();
 
 	let params = puzzle.param_values;
 	for (let [key,imp] of Object.entries(IMPS))
@@ -609,15 +574,18 @@ function load_puzzle(puzzle)
 
 function show_example(idx)
 {
-	if (!EXAMPLES[pt]) return;
+	if (!EXAMPLES[pt])
+		return;
+
 	let example = EXAMPLES[pt][idx];
-	if (!example) return;
+	if (!example)
+		return;
 
 	load_puzzle(example.data);
 
 	if (example.link)
 		get('header_div').innerHTML =
-			`<a href=${example.link} target='_blank'>(Source)</a>`;
+			`<a href=${example.link} target='_blank'>(Example source)</a>`;
 }
 
 function display_example_buttons()
@@ -645,6 +613,7 @@ function parse_input()
 		param_values: get_param_values(),
 		grid: {}
 	};
+
 	for (let elf of Object.values(ELVES))
 	{
 		let encoding = elf.encode_input();
@@ -667,9 +636,6 @@ function parse_input()
 
 function solve_puzzle()
 {
-    if (pt == 'none')
-        return;
-
 	still_going = true;
 	current_request = new XMLHttpRequest();
 	current_request.open("GET",`solver?puzzle_type=${pt}&puzzle=${encodeURI(parse_input())}`);
@@ -677,33 +643,39 @@ function solve_puzzle()
 	{
 		if (this.stopped)
 			return;
-
-	  	if (this.readyState == 4 && this.status == 200)
+	  	else if (this.readyState == 4)
 	  	{
-	  		set_status('solved');
-	  		display_solutions(this.responseText);
-	  	}
-       	else if (this.readyState == 4 && this.status != 200 && this.status != 0)
-        	display_error_message(this.responseText);
+	  		if (this.status == 200) // solve went through correctly
+		  	{
+		  		set_solved();
+		  		display_solutions(this.responseText);
+		  	}
+	       	else if (this.status != 200 && this.status != 0) // something went wrong
+	    		display_error_message(this.responseText);
+	    }
 	}
 	current_request.send();
     spinner(start=true);
 }
 
 let spinner_pos = null;
-const spinner_values = ['Solving...', 'Solving.&nbsp;&nbsp;', 'Solving..&nbsp;'];
-function spinner(start=false, timeout=300)
+const spinner_values = ['Solving.&nbsp;&nbsp;', 'Solving..&nbsp;', 'Solving...',];
+function spinner(start=false, timeout=500)
 {
-    if (!start && spinner_pos == null) return;
-    if (start) spinner_pos = 0;
+    if (!start && spinner_pos == null)
+    	return;
+
+    if (start)
+    	spinner_pos = 0;
+
     get('header_div').innerHTML = spinner_values[spinner_pos];
     spinner_pos = (spinner_pos + 1) % spinner_values.length;
     setTimeout(spinner, timeout);
 }
 
-///////////////////////////////////////
-// display solution(s) after solving //
-///////////////////////////////////////
+////////////////////////////////////////
+// display solutions or error message //
+////////////////////////////////////////
 
 let solution_num, solutions, num_solutions;
 
@@ -733,7 +705,7 @@ function display_solutions(solution_str)
 
 function display_next_solution()
 {
-	solution_num = (solution_num % num_solutions) + 1;
+	solution_num = (solution_num % num_solutions) + 1; // solutions are 1-indexed so this works correctly
 	get('solution_num').innerHTML = solution_num;
 	
 	for (let elf of Object.values(ELVES))
@@ -745,7 +717,7 @@ function display_next_solution()
 	{
 		if (ELVES[elt_id])
 			ELVES[elt_id].load_solution(solution[elt_id]);
-		else // a bit hacky // update: pretty hacky
+		else // hack to allow adding black borders which aren't given an elf; TODO make this less hacky
 		{
 			set_z_order([get('puzzle_'+elt_id), get('solution_'+elt_id)]);
 			get('solution_'+elt_id).style.backgroundColor = 'black';
@@ -753,17 +725,10 @@ function display_next_solution()
 	}
 }
 
-////////////////////////////////////////////////////
-// display an error message if something is wrong //
-////////////////////////////////////////////////////
-
 function display_error_message(error_str)
 {
     spinner_pos = null; // stop the spinner
 
-  //  console.log(error_str);
-
-   	error = JSON.parse(error_str);// TODO fix this
-    get('header_div').innerHTML = error.message ?
-    	error.message : "An unknown error occurred";
+   	error = JSON.parse(error_str);
+    get('header_div').innerHTML = error.message || "An unknown error occurred";
 }
