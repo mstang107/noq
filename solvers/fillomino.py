@@ -6,25 +6,6 @@ def encode(string):
     return utils.encode(string)
 
 def solve(E):
-    # if len(E.clues) == 0:
-    #     raise ValueError('The grid is empty.')
-    # elif len(E.clues) == 1:
-    #     raise ValueError('Are you sure you put in all the clues?')
-
-    # def bound_max_num_regions(R, C): # TODO get better bounds
-    #     R, C = min(R,C), max(R,C)
-    #     if R == 0:
-    #         return 0
-    #     if R == 1:
-    #         return int((2*C+1)//3)
-    #     if R == 2:
-    #         return 3*C//2
-    #     else:
-    #         base = 7*(R//3)*(C//3)
-    #         extra = bound_max_num_regions(R%3, C) + \
-    #                 bound_max_num_regions(C%3, R-R%3)
-    #         return base + extra
-
     def unclued_areas_bfs(clues, R, C):
         region_id = {}
         id_to_pts = {}
@@ -75,13 +56,14 @@ def solve(E):
 
     distinct_clues = set(E.clues.values())
     max_clue = max(distinct_clues, default=n)
-    max_num_regions = n
 
     indep_bound = n
+    max_num_regions = n
     for clue_num in distinct_clues:
         clues = list(filter(lambda clue: E.clues[clue] == clue_num, E.clues))
         indep = find_independent_set(clues, lambda x,y: abs(x[0]-y[0])+abs(x[1]-y[1])<clue_num)
         indep_bound -= len(indep) * clue_num
+
     max_region_size = max(indep_bound, max_clue)
     bfs_max_region_sizes = unclued_areas_bfs(E.clues, E.R, E.C)
 
@@ -90,14 +72,23 @@ def solve(E):
     # Restrict the number of bits used for IntVar
     set_max_val(max(max_num_regions, max_region_size))
 
-    # for r in range(E.R):
-    #     for c in range(E.C):
-    #         if (r,c) in E.clues:
-    #             print('clue', (r,c), E.clues[(r,c)])
-    #         else:
-    #             print('empty', (r,c), min(bfs_max_region_sizes[(r,c)],max_region_size), flush=True)
+    region_id = utils.RectangularGrid(E.R, E.C, lambda r,c: IntVar(0, E.C*r+c))
+    # forces each root to be the topleft-most cell
+    # (i.e., first in row-major order) of its region
 
-    region_id = utils.RectangularGrid(E.R, E.C, lambda: IntVar(0, max_num_regions-1))
+    for (r,c) in E.clues: # refine possibilities for region_id for each clue cell
+        region_id_poss = []
+
+        clue_val = E.clues[(r,c)]
+        if clue_val <= r: # clue's region can't reach the top row
+            r0 = r - clue_val + 1
+            # row-major-first cell reachable is (r0, c)
+            require(region_id[r][c] >= E.C*r0 + c)
+        else: # clue's region can reach the top row
+            c0 = c - (clue_val-r-1)
+            if c0 > 0: # row-major-first cell reachable is (0, c0), to the right of (0, 0)
+                require(region_id[r][c] >= c0)
+
     region_size = utils.RectangularGrid(E.R, E.C, 
         lambda r,c:
             IntVar(E.clues[(r,c)]) if (r,c) in E.clues else \
