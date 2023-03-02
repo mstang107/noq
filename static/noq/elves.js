@@ -1586,6 +1586,7 @@ let elf_types = {
 	easyas: EasyAsElf,
 	fillomino: IntElf(),
 	gokigen: IntElf(0,4,'[0-4]', 'center_dot'),
+	haisu: DirectSum(IntBordersElf(), LetterElf('SG'), 'first'),
 	hashi: IntElf(0,8,'[0-8]'),
 	heteromino: BgColorElf({'x': ['darkgray', 'gray']}),
 	heyawake: InvertSolutionZOrder(IntBordersElf()),

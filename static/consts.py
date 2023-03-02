@@ -27,6 +27,7 @@ types = [
 	{'value': 'easyas', 'name': 'Easy As', 'cat': 'lsq'},
 	{'value': 'fillomino', 'name': 'Fillomino', 'cat': 'num'},
 	{'value': 'gokigen', 'name': 'Gokigen (Slant)', 'cat': 'obj'},	# is this the right category??
+	{'value': 'haisu', 'name': 'Haisu', 'cat': 'loop'},
 	{'value': 'hashi', 'name': 'Hashi (Bridges)', 'cat': 'loop'},
 	{'value': 'heteromino', 'name': 'Heteromino', 'cat': 'region'},
 	{'value': 'heyawake', 'name': 'Heyawake', 'cat': 'shade'},
