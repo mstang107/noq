@@ -1,5 +1,6 @@
 from .claspy import *
 from . import utils
+from .utils.loops import *
 
 def encode(string):
     return utils.encode(string, has_borders = True, clue_encoder = lambda x : int(x) if x.isnumeric() else x)
@@ -8,123 +9,159 @@ def solve(E):
     if not ('s' in E.clues.values() and 'g' in E.clues.values()):
         raise ValueError('S and G squares must be provided.')
 
+    # The largest IntVar we need is 1+(the largest clue value).
+    set_max_val(max(filter(lambda x: type(x) == int, E.clues.values()))+1)
+
     rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
-    cell_to_room, room_spanners = {}, {}
+
+    room_has_start = {room: False for room in rooms}
+    room_to_number_clues = {room: set() for room in rooms}
     for room in rooms:
         for (r, c) in room:
-            cell_to_room[(r,c)] = room
+            if type(E.clues.get((r,c))) == int:
+                room_to_number_clues[room].add((r,c))
+            elif E.clues.get((r,c)) == 's':
+                room_has_start[room] = True
+
+    cell_to_room, room_spanners, cell_to_out_of_region_neighbors = {}, {}, {(r,c): set() for c in range(E.C) for r in range(E.R)}
+    for room in rooms:
+        for (r, c) in room:
+            cell_to_room[(r, c)] = room
             for (y, x) in utils.grids.get_neighbors(E.R, E.C, r, c):
                 if (y, x) not in room:
                     if room not in room_spanners:
                         room_spanners[room] = set()
                     room_spanners[room].add(((r, c), (y, x)))
-    # Counts the place on the path, from 0 to E.R*E.C-1 (inclusive).
-    grid = [[IntVar(0, E.R*E.C-1) for c in range(E.C)] for r in range(E.R)]
-    require_all_diff([grid[r][c] for c in range(E.C) for r in range(E.R)])
+                    cell_to_out_of_region_neighbors[(r,c)].add((y,x))
 
-    r_start, c_start = None, None
+    ALL = ['J^', 'J<', '7v', '7<', 'L^', 'L>', 'r>', 'rv', '->', '-<', '1^', '1v', 's', 'g']
+
+    # Paths
+    conn_patterns = [[MultiVar(*ALL) for c in range(E.C)] for r in range(E.R)]
+
+    # Atoms to keep track of connectivity for each individual clue
+    conn_atoms = [[Atom() for c in range(E.C)] for r in range(E.R)]
+
+    # True at (r,c) iff the path transition onto (r,c) crosses a border.
+    # boundary = [[BoolVar() for c in range(E.C)] for r in range(E.R)]
+    parent = [[MultiVar('^', 'v', '<', '>', '.') for c in range(E.C)] for r in range(E.R)]
+
+    # --- Path rules ---
     for r in range(E.R):
         for c in range(E.C):
-            if E.clues.get((r,c)) == 's':
-                r_start = r
-                c_start = c
-                room_start = cell_to_room[(r,c)]
-                require(grid[r][c] == 0)
+            # --- Top / bottom edge rules ---
+            if r == 0:
+                require(~var_in(conn_patterns[r][c], TOP_IN+TOP_OUT))
+            if r == E.R - 1:
+                require(~var_in(conn_patterns[r][c], BOTTOM_IN+BOTTOM_OUT))
+            # --- Left / right edge rules ---
+            if c == 0:
+                require(~var_in(conn_patterns[r][c], LEFT_IN+LEFT_OUT))
+            if c == E.C - 1:
+                require(~var_in(conn_patterns[r][c], RIGHT_IN+RIGHT_OUT))
+            # --- Other connectivity rules ---
+            if 0 < r:
+                # Cover cases where this cell has flow in from the top.
+                # Cases where top cell has flow in from the bottom will be covered in the r < E.R - 1 section.
+                
+                # Basic rules (no dangling edges)
+                require(var_in(conn_patterns[r][c], TOP_IN+['g']) |
+                    ~var_in(conn_patterns[r-1][c], BOTTOM_OUT)
+                )
+                # Parent tracking & connectivity
+                flow_from_top = (var_in(conn_patterns[r-1][c], BOTTOM_OUT) |
+                    ((conn_patterns[r-1][c] == 's') & var_in(conn_patterns[r][c], TOP_IN)))
+                require(flow_from_top == (parent[r][c] == '^'))
+                conn_atoms[r][c].prove_if(conn_atoms[r-1][c] & flow_from_top)
 
-            if E.clues.get((r,c)) == 'g':
-                require(grid[r][c] == E.R*E.C-1)
-            else:
-                cond = False
-                for (y, x) in utils.grids.get_neighbors(E.R, E.C, r, c):
-                    cond |= (grid[y][x] == (grid[r][c] + 1))
-                require(cond)
+            if r < E.R - 1:
+                # Cases where this cell has flow in from the bottom.
 
-    for (r, c), value in E.clues.items():
-        if type(value) == int:
-            visit_count = IntVar(0)
-            for ((y, x), (y2, x2)) in room_spanners[cell_to_room[(r, c)]]:
-                visit_count += (grid[y][x] == grid[y2][x2] + 1) & (grid[y][x] <= grid[r][c])
-            
-            if cell_to_room[(r,c)] == room_start:
-                require(visit_count + 1 == value)
-            else:
-                require(visit_count == value)
-    
-    def format_function(r, c):
-        if E.clues.get((r,c)) == 's':
-            if 0 < r and grid[r][c].value() == grid[r-1][c].value() - 1:
-                return 's↑.png'
-            if r < E.R-1 and grid[r][c].value() == grid[r+1][c].value() - 1:
-                return 's↓.png'
-            if 0 < c and grid[r][c].value() == grid[r][c-1].value() - 1:
-                return 's←.png'
-            if c < E.C-1 and grid[r][c].value() == grid[r][c+1].value() - 1:
-                return 's→.png'
+                # Basic rules (no dangling edges)
+                require(var_in(conn_patterns[r][c], BOTTOM_IN+['g']) |
+                    ~var_in(conn_patterns[r+1][c], TOP_OUT)
+                )
+                # Parent tracking
+                flow_from_bottom = (var_in(conn_patterns[r+1][c], TOP_OUT) |
+                    ((conn_patterns[r+1][c] == 's') & var_in(conn_patterns[r][c], BOTTOM_IN)))
+                require(flow_from_bottom == (parent[r][c] == 'v'))
+                conn_atoms[r][c].prove_if(conn_atoms[r+1][c] & flow_from_bottom)
+
+            if 0 < c:
+                # Cases where this cell has flow in from the left.
+
+                # Basic rules (no dangling edges)
+                require(var_in(conn_patterns[r][c], LEFT_IN+['g']) |
+                    ~var_in(conn_patterns[r][c-1], RIGHT_OUT)
+                )
+                # Parent tracking
+                flow_from_left = (var_in(conn_patterns[r][c-1], RIGHT_OUT) |
+                    ((conn_patterns[r][c-1] == 's') & var_in(conn_patterns[r][c], LEFT_IN)))
+                require(flow_from_left == (parent[r][c] == '<'))
+                conn_atoms[r][c].prove_if(conn_atoms[r][c-1] & flow_from_left)
+                
+            if c < E.C - 1:
+                # Cases where this cell has flow in from the right.
+
+                # Basic rules (no dangling edges)
+                require(var_in(conn_patterns[r][c], RIGHT_IN+['g']) |
+                    ~var_in(conn_patterns[r][c+1], LEFT_OUT)
+                )
+                # Parent tracking
+                flow_from_right = (var_in(conn_patterns[r][c+1], LEFT_OUT) |
+                    ((conn_patterns[r][c+1] == 's') & var_in(conn_patterns[r][c], RIGHT_IN)))
+                require(flow_from_right == (parent[r][c] == '>'))
+                conn_atoms[r][c].prove_if(conn_atoms[r][c+1] & flow_from_right)
+
+            conn_atoms[r][c].prove_if(E.clues.get((r,c)) == 's')
+            require(conn_atoms[r][c])
+    # -- Clue rules --
+    for r in range(E.R):
+        for c in range(E.C):
+            require((conn_patterns[r][c] == 's') == (E.clues.get((r,c)) == 's'))
+            require((parent[r][c] == '.') == (E.clues.get((r,c)) == 's'))
+            require((conn_patterns[r][c] == 'g') == (E.clues.get((r,c)) == 'g'))
+
+    # --- Haisu rules ---
+    for room in rooms:
+        if room_to_number_clues[room]:
+            max_clue = max(E.clues[(r,c)] for (r,c) in room_to_number_clues[room])
+            entrance_count = [[IntVar(0, max_clue+1) for c in range(E.C)] for r in range(E.R)]
+            for r in range(E.R):
+                for c in range(E.C):
+                    require((E.clues.get((r,c)) != 's') | (entrance_count[r][c] == 0))
+                    if 0 < r:
+                        if (r, c) in room and (r-1, c) in cell_to_out_of_region_neighbors[(r,c)]:
+                            require((parent[r][c] != '^') | (entrance_count[r][c] == cond(entrance_count[r-1][c] == max_clue+1, max_clue+1, entrance_count[r-1][c] + 1)))
+                        else:
+                            require((parent[r][c] != '^') | (entrance_count[r][c] == entrance_count[r-1][c]))
+                    if r < E.R-1:
+                        if (r, c) in room and (r+1, c) in cell_to_out_of_region_neighbors[(r,c)]:
+                            require((parent[r][c] != 'v') | (entrance_count[r][c] == cond(entrance_count[r+1][c] == max_clue+1, max_clue+1, entrance_count[r+1][c] + 1)))
+                        else:
+                            require((parent[r][c] != 'v') | (entrance_count[r][c] == entrance_count[r+1][c]))
+                    if 0 < c:
+                        if (r, c) in room and (r, c-1) in cell_to_out_of_region_neighbors[(r,c)]:
+                            require((parent[r][c] != '<') | (entrance_count[r][c] == cond(entrance_count[r][c-1] == max_clue+1, max_clue+1, entrance_count[r][c-1] + 1)))
+                        else:
+                            require((parent[r][c] != '<') | (entrance_count[r][c] == entrance_count[r][c-1]))
+                    if c < E.C-1:
+                        if (r, c) in room and (r, c+1) in cell_to_out_of_region_neighbors[(r,c)]:
+                            require((parent[r][c] != '>') | (entrance_count[r][c] == cond(entrance_count[r][c+1] == max_clue+1, max_clue+1, entrance_count[r][c+1] + 1)))
+                        else:
+                            require((parent[r][c] != '>') | (entrance_count[r][c] == entrance_count[r][c+1]))
+            for (r, c) in room_to_number_clues[room]:
+                value = E.clues[(r,c)]
+                require((entrance_count[r][c] + (1 if room_has_start[room] else 0)) == value)
         
-        elif E.clues.get((r,c)) == 'g':
-            if 0 < r and grid[r][c].value() == grid[r-1][c].value() + 1:
-                return 'g↓.png'
-            if r < E.R-1 and grid[r][c].value() == grid[r+1][c].value() + 1:
-                return 'g↑.png'
-            if 0 < c and grid[r][c].value() == grid[r][c-1].value() + 1:
-                return 'g→.png'
-            if c < E.C-1 and grid[r][c].value() == grid[r][c+1].value() + 1:
-                return 'g←.png'
+    def format_function(r, c):
+        value = E.clues.get((r,c))
+        if type(value) == str and value in 'sg':
+            return ''
+        return f'{DIRECTIONAL_PAIR_TO_UNICODE[conn_patterns[r][c].value()]}.png'
 
-        if 0 < r:
-            flow_up_out = grid[r][c].value() == grid[r-1][c].value() - 1
-            flow_down_in = grid[r][c].value() == grid[r-1][c].value() + 1
-            if 0 < c:
-                flow_left_out = grid[r][c].value() == grid[r][c-1].value() - 1
-                flow_right_in = grid[r][c].value() == grid[r][c-1].value() + 1
-                if flow_right_in and flow_up_out:
-                    return '⬏.png'
-                elif flow_down_in and flow_left_out:
-                    return '↲.png'
-            if c < E.C-1:
-                flow_right_out = grid[r][c].value() == grid[r][c+1].value() - 1
-                flow_left_in = grid[r][c].value() == grid[r][c+1].value() + 1
-                if flow_left_in and flow_up_out:
-                    return '⬑.png'
-                elif flow_down_in and flow_right_out:
-                    return'↳.png'
-        if r < E.R-1:
-            flow_down_out = grid[r][c].value() == grid[r+1][c].value() - 1
-            flow_up_in = grid[r][c].value() == grid[r+1][c].value() + 1
-            if 0 < c:
-                flow_left_out = grid[r][c].value() == grid[r][c-1].value() - 1
-                flow_right_in = grid[r][c].value() == grid[r][c-1].value() + 1
-                if flow_right_in and flow_down_out:
-                    return '↴.png'
-                elif flow_up_in and flow_left_out:
-                    return '↰.png'
-            if c < E.C-1:
-                flow_right_out = grid[r][c].value() == grid[r][c+1].value() - 1
-                flow_left_in = grid[r][c].value() == grid[r][c+1].value() + 1
-                if flow_left_in and flow_down_out:
-                    return '⬐.png'
-                elif flow_up_in and flow_right_out:
-                    return '↱.png'
-        if 0 < r < E.R-1:
-            flow_up_out = grid[r][c].value() == grid[r-1][c].value() - 1
-            flow_down_in = grid[r][c].value() == grid[r-1][c].value() + 1
-            flow_down_out = grid[r][c].value() == grid[r+1][c].value() - 1
-            flow_up_in = grid[r][c].value() == grid[r+1][c].value() + 1
-            if flow_down_in and flow_down_out:
-                return '↓.png'
-            elif flow_up_in and flow_up_out:
-                return '↑.png'
-        if 0 < c < E.C-1:
-            flow_left_out = grid[r][c].value() == grid[r][c-1].value() - 1
-            flow_right_in = grid[r][c].value() == grid[r][c-1].value() + 1
-            flow_right_out = grid[r][c].value() == grid[r][c+1].value() - 1
-            flow_left_in = grid[r][c].value() == grid[r][c+1].value() + 1
-            if flow_right_in and flow_right_out:
-                return '→.png'
-            if flow_left_in and flow_left_out:
-                return '←.png'
-
-    return utils.solutions.get_all_grid_solutions(grid, format_function=format_function)
+    res = utils.solutions.get_all_grid_solutions(conn_patterns, format_function=format_function)
+    return res
 
 def decode(solutions):
     return utils.decode(solutions)
