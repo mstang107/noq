@@ -12,7 +12,7 @@ def solve(E):
     cell_to_room, room_spanners = {}, {}
     for room in rooms:
         for (r, c) in room:
-            cell_to_room[(r, c)] = room
+            cell_to_room[(r,c)] = room
             for (y, x) in utils.grids.get_neighbors(E.R, E.C, r, c):
                 if (y, x) not in room:
                     if room not in room_spanners:
@@ -21,22 +21,34 @@ def solve(E):
     # Counts the place on the path, from 0 to E.R*E.C-1 (inclusive).
     grid = [[IntVar(0, E.R*E.C-1) for c in range(E.C)] for r in range(E.R)]
     require_all_diff([grid[r][c] for c in range(E.C) for r in range(E.R)])
+
+    r_start, c_start = None, None
     for r in range(E.R):
         for c in range(E.C):
-            require((grid[r][c] == 0) == (E.clues.get((r,c)) == 's'))
-            require((grid[r][c] == (E.R*E.C-1)) == (E.clues.get((r,c)) == 'g'))
-    for r in range(E.R):
-        for c in range(E.C):
-            if E.clues.get((r,c)) != 'g':
-                require(sum_bools(1, [grid[y][x] == (grid[r][c] + 1) for (y, x) in utils.grids.get_neighbors(E.R, E.C, r, c)]))
+            if E.clues.get((r,c)) == 's':
+                r_start = r
+                c_start = c
+                room_start = cell_to_room[(r,c)]
+                require(grid[r][c] == 0)
+
+            if E.clues.get((r,c)) == 'g':
+                require(grid[r][c] == E.R*E.C-1)
+            else:
+                cond = False
+                for (y, x) in utils.grids.get_neighbors(E.R, E.C, r, c):
+                    cond |= (grid[y][x] == (grid[r][c] + 1))
+                require(cond)
 
     for (r, c), value in E.clues.items():
         if type(value) == int:
             visit_count = IntVar(0)
             for ((y, x), (y2, x2)) in room_spanners[cell_to_room[(r, c)]]:
-                visit_count += cond((grid[y][x] == (grid[y2][x2] + 1)) & (grid[y][x] <= grid[r][c]), 1, 0)
-                
-            require(visit_count == value)
+                visit_count += (grid[y][x] == grid[y2][x2] + 1) & (grid[y][x] <= grid[r][c])
+            
+            if cell_to_room[(r,c)] == room_start:
+                require(visit_count + 1 == value)
+            else:
+                require(visit_count == value)
     
     def format_function(r, c):
         if E.clues.get((r,c)) == 's':
