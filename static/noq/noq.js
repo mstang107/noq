@@ -23,7 +23,6 @@ $.getMultiScripts(SCRIPTS_TO_LOAD, 'static/').done(function() {
 	set_unsolved();
 });
 
-
 function get(elt_id) { return document.getElementById(elt_id); }
 function is_json(obj) { return obj.constructor == ({}).constructor; }
 function get_id_arr(elt) { let arr = elt.id.split(','); return [parseInt(arr[0]), parseInt(arr[1])]; }

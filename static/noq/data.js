@@ -61,6 +61,10 @@ const puzzle_types = {
 		properties: { outside: '0000', border: false },
 		display: {no_border_lines: true}
 		},
+	haisu: {
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
+		properties: { outside: '0000', border: true }
+		},
 	hashi: {
 		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }

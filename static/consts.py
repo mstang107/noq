@@ -25,6 +25,7 @@ types = [
 	{'value': 'easyas', 'name': 'Easy As', 'cat': 'lsq'},
 	{'value': 'fillomino', 'name': 'Fillomino', 'cat': 'num'},
 	{'value': 'gokigen', 'name': 'Gokigen (Slant)', 'cat': 'obj'},	# is this the right category??
+	{'value': 'haisu', 'name': 'Haisu', 'cat': 'loop'},
 	{'value': 'hashi', 'name': 'Hashi (Bridges)', 'cat': 'loop'},
 	{'value': 'heteromino', 'name': 'Heteromino', 'cat': 'region'},
 	{'value': 'heyawake', 'name': 'Heyawake', 'cat': 'shade'},
@@ -44,7 +45,7 @@ types = [
 	{'value': 'ncells', 'name': 'N Cells', 'cat': 'region',
 		'aliases': ['fivecells', 'fourcells']},
 	{'value': 'nonogram', 'name': 'Nonogram', 'cat': 'shade'},
-	{'value': 'norinori', 'name': 'Norinori', 'cat': 'region'},
+	{'value': 'norinori', 'name': 'Norinori', 'cat': 'shade'},
 	{'value': 'numberlink', 'name': 'Numberlink', 'cat': 'loop'},
 	{'value': 'nuribou', 'name': 'Nuribou', 'cat': 'shade'},
 	{'value': 'nurikabe', 'name': 'Nurikabe', 'cat': 'shade'},
