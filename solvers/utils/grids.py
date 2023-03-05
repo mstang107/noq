@@ -87,3 +87,8 @@ class RectangularGrid:
         Returns the surroundings (includes diagonals) of (r, c) in this grid.
         '''
         return get_surroundings(self.rows, self.cols, r, c)
+
+    def iter_coords(self):
+        for r in range(self.rows):
+            for c in range(self.cols):
+                yield (r,c)

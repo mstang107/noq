@@ -1,8 +1,4 @@
 const puzzle_types = {
-	custom: {
-		params: { r: {name: 'Rows', value:10}, c: {name: 'Columns', value:10} },
-		properties: { outside: '1111', border: true }
-		},
 	aho: {
 		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }

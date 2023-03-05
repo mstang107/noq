@@ -696,9 +696,10 @@ function LetterElf(letterset, concat=false)
 		handle_input(key, modifiers)
 		{
 			super.handle_input(key, modifiers);
-			if (!letterset.toLowerCase().includes(key)) return;
+			if (!letterset.toLowerCase().includes(key) & !letterset.toUpperCase().includes(key)) return;
 			// now set the HTML
-			this.puzzle_elt.innerHTML = concat ? this.puzzle_elt.innerHTML+key : key; 
+			const casedKey = letterset.includes(key.toUpperCase()) ? key.toUpperCase() : key.toLowerCase();
+			this.puzzle_elt.innerHTML = concat ? this.puzzle_elt.innerHTML+casedKey : casedKey;
 		}
 
 		encode_input()
@@ -1551,7 +1552,6 @@ class CustomElf extends Elf {
 }
 
 let elf_types = {
-	custom: CustomElf,
 	akari: AkariElf,
 	aquarium: IntBordersElf(),
 	balanceloop: DirectSum(
@@ -1661,7 +1661,7 @@ let elf_types = {
 	stostone: IntBordersElf(),
 	sudoku: SudokuElf,
 	tapa: TapaElf,
-	tatamibari: LetterElf('+|-'),
+	tatamibari: LetterElf('+-|'),
 	tents: DirectSum(IntElf(0,99), ImageElf(
 		{
 			'n': 'tent', 'e': 'tree'

@@ -1,6 +1,7 @@
 from .claspy import *
 from . import utils
 from .utils.loops import *
+from .utils import grids
 
 def encode(string):
     return utils.encode(string, has_borders = True, clue_encoder = lambda x : int(x) if x.isnumeric() else x)
@@ -9,21 +10,21 @@ def solve(E):
     if not ('s' in E.clues.values() and 'g' in E.clues.values()):
         raise ValueError('S and G squares must be provided.')
 
-    # The largest IntVar we need is 1+(the largest clue value).
-    set_max_val(max(filter(lambda x: type(x) == int, E.clues.values()))+1)
-
     rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
 
     room_has_start = {room: False for room in rooms}
-    room_to_number_clues = {room: set() for room in rooms}
+    start = None
+    goal = None
     for room in rooms:
         for (r, c) in room:
-            if type(E.clues.get((r,c))) == int:
-                room_to_number_clues[room].add((r,c))
-            elif E.clues.get((r,c)) == 's':
+            clue = E.clues.get((r,c))
+            if clue == 's':
+                start = (r,c)
                 room_has_start[room] = True
+            elif clue == 'g':
+                goal = (r,c)
 
-    cell_to_room, room_spanners, cell_to_out_of_region_neighbors = {}, {}, {(r,c): set() for c in range(E.C) for r in range(E.R)}
+    cell_to_room, room_spanners = {}, {}
     for room in rooms:
         for (r, c) in room:
             cell_to_room[(r, c)] = room
@@ -32,23 +33,79 @@ def solve(E):
                     if room not in room_spanners:
                         room_spanners[room] = set()
                     room_spanners[room].add(((r, c), (y, x)))
-                    cell_to_out_of_region_neighbors[(r,c)].add((y,x))
+
+    parent = grids.RectangularGrid(E.R, E.C, lambda r,c: MultiVar('^','v','<','>','.'))
+    require(parent[start] == '.')
+
+     # before[u][v] is true iff u comes (weakly) before v in the path
+    before = {}
+    for coord1 in parent.iter_coords():
+        for coord2 in parent.iter_coords():
+            before[(coord1,coord2)] = Atom()
+            if coord1 != coord2 and (coord2,coord1) in before:
+                # require antisymmetry
+                require(before[(coord1, coord2)] != before[(coord2, coord1)])
+
+    for coord1 in parent.iter_coords():
+        for coord2 in parent.iter_coords():
+            if coord1 == coord2:
+                before[(coord1,coord2)].prove_if(True)
+            else:
+                cond = False
+                r, c = coord2
+                if r > 0:
+                    cond |= ((parent[coord2] == '^') & before[(coord1,(r-1,c))])
+                if r < E.R-1:
+                    cond |= ((parent[coord2] == 'v') & before[(coord1,(r+1,c))])
+                if c > 0:
+                    cond |= ((parent[coord2] == '<') & before[(coord1,(r,c-1))])
+                if c < E.C-1:
+                    cond |= ((parent[coord2] == '>') & before[(coord1,(r,c+1))])
+                before[(coord1,coord2)].prove_if(cond)
+
+    for coord in parent.iter_coords():
+        require(before[(start,coord)]) # everything has to come after start, i.e., be on the path
+        if coord != goal:
+            require(~before[(goal,coord)]) # nothing can come after goal
+
+    for coord in E.clues:
+        room = cell_to_room[coord]
+        value = E.clues[coord]
+        if value in ['s','g']: continue
+
+        possible_entrances = []
+        for (A,B) in room_spanners[room]: # A in room; B not in room and adj to A
+            # so we want ... -> B -> A -> ... -> coord
+            r2,c2 = B
+            if A == (r2+1,c2): # A below B
+                adj_AB = (parent[A] == '^')
+            if A == (r2-1,c2): # A above B
+                adj_AB = (parent[A] == 'v')
+            if A == (r2,c2+1): # A right of B
+                adj_AB = (parent[A] == '<')
+            if A == (r2,c2-1): # A left of B
+                adj_AB = (parent[A] == '>')
+
+            possible_entrances.append(before[(A,coord)] & adj_AB)
+
+        if room_has_start[room]:
+            require(sum_bools(value-1, possible_entrances))
+        else:
+            require(sum_bools(value, possible_entrances))
+
+
+
+    # thanks for writing this formatting code jenna
 
     ALL = ['J^', 'J<', '7v', '7<', 'L^', 'L>', 'r>', 'rv', '->', '-<', '1^', '1v', 's', 'g']
 
     # Paths
     conn_patterns = [[MultiVar(*ALL) for c in range(E.C)] for r in range(E.R)]
-
-    # Atoms to keep track of connectivity for each individual clue
-    conn_atoms = [[Atom() for c in range(E.C)] for r in range(E.R)]
-
-    # True at (r,c) iff the path transition onto (r,c) crosses a border.
-    # boundary = [[BoolVar() for c in range(E.C)] for r in range(E.R)]
-    parent = [[MultiVar('^', 'v', '<', '>', '.') for c in range(E.C)] for r in range(E.R)]
-
-    # --- Path rules ---
     for r in range(E.R):
         for c in range(E.C):
+            require((conn_patterns[r][c] == 's') == ((r,c) == start))
+            require((conn_patterns[r][c] == 'g') == ((r,c) == goal))
+
             # --- Top / bottom edge rules ---
             if r == 0:
                 require(~var_in(conn_patterns[r][c], TOP_IN+TOP_OUT))
@@ -59,7 +116,7 @@ def solve(E):
                 require(~var_in(conn_patterns[r][c], LEFT_IN+LEFT_OUT))
             if c == E.C - 1:
                 require(~var_in(conn_patterns[r][c], RIGHT_IN+RIGHT_OUT))
-            # --- Other connectivity rules ---
+            # # --- Other connectivity rules ---
             if 0 < r:
                 # Cover cases where this cell has flow in from the top.
                 # Cases where top cell has flow in from the bottom will be covered in the r < E.R - 1 section.
@@ -72,7 +129,6 @@ def solve(E):
                 flow_from_top = (var_in(conn_patterns[r-1][c], BOTTOM_OUT) |
                     ((conn_patterns[r-1][c] == 's') & var_in(conn_patterns[r][c], TOP_IN)))
                 require(flow_from_top == (parent[r][c] == '^'))
-                conn_atoms[r][c].prove_if(conn_atoms[r-1][c] & flow_from_top)
 
             if r < E.R - 1:
                 # Cases where this cell has flow in from the bottom.
@@ -85,7 +141,6 @@ def solve(E):
                 flow_from_bottom = (var_in(conn_patterns[r+1][c], TOP_OUT) |
                     ((conn_patterns[r+1][c] == 's') & var_in(conn_patterns[r][c], BOTTOM_IN)))
                 require(flow_from_bottom == (parent[r][c] == 'v'))
-                conn_atoms[r][c].prove_if(conn_atoms[r+1][c] & flow_from_bottom)
 
             if 0 < c:
                 # Cases where this cell has flow in from the left.
@@ -98,7 +153,6 @@ def solve(E):
                 flow_from_left = (var_in(conn_patterns[r][c-1], RIGHT_OUT) |
                     ((conn_patterns[r][c-1] == 's') & var_in(conn_patterns[r][c], LEFT_IN)))
                 require(flow_from_left == (parent[r][c] == '<'))
-                conn_atoms[r][c].prove_if(conn_atoms[r][c-1] & flow_from_left)
                 
             if c < E.C - 1:
                 # Cases where this cell has flow in from the right.
@@ -111,52 +165,9 @@ def solve(E):
                 flow_from_right = (var_in(conn_patterns[r][c+1], LEFT_OUT) |
                     ((conn_patterns[r][c+1] == 's') & var_in(conn_patterns[r][c], RIGHT_IN)))
                 require(flow_from_right == (parent[r][c] == '>'))
-                conn_atoms[r][c].prove_if(conn_atoms[r][c+1] & flow_from_right)
 
-            conn_atoms[r][c].prove_if(E.clues.get((r,c)) == 's')
-            require(conn_atoms[r][c])
-    # -- Clue rules --
-    for r in range(E.R):
-        for c in range(E.C):
-            require((conn_patterns[r][c] == 's') == (E.clues.get((r,c)) == 's'))
-            require((parent[r][c] == '.') == (E.clues.get((r,c)) == 's'))
-            require((conn_patterns[r][c] == 'g') == (E.clues.get((r,c)) == 'g'))
-
-    # --- Haisu rules ---
-    for room in rooms:
-        if room_to_number_clues[room]:
-            max_clue = max(E.clues[(r,c)] for (r,c) in room_to_number_clues[room])
-            entrance_count = [[IntVar(0, max_clue+1) for c in range(E.C)] for r in range(E.R)]
-            for r in range(E.R):
-                for c in range(E.C):
-                    require((E.clues.get((r,c)) != 's') | (entrance_count[r][c] == 0))
-                    if 0 < r:
-                        if (r, c) in room and (r-1, c) in cell_to_out_of_region_neighbors[(r,c)]:
-                            require((parent[r][c] != '^') | (entrance_count[r][c] == cond(entrance_count[r-1][c] == max_clue+1, max_clue+1, entrance_count[r-1][c] + 1)))
-                        else:
-                            require((parent[r][c] != '^') | (entrance_count[r][c] == entrance_count[r-1][c]))
-                    if r < E.R-1:
-                        if (r, c) in room and (r+1, c) in cell_to_out_of_region_neighbors[(r,c)]:
-                            require((parent[r][c] != 'v') | (entrance_count[r][c] == cond(entrance_count[r+1][c] == max_clue+1, max_clue+1, entrance_count[r+1][c] + 1)))
-                        else:
-                            require((parent[r][c] != 'v') | (entrance_count[r][c] == entrance_count[r+1][c]))
-                    if 0 < c:
-                        if (r, c) in room and (r, c-1) in cell_to_out_of_region_neighbors[(r,c)]:
-                            require((parent[r][c] != '<') | (entrance_count[r][c] == cond(entrance_count[r][c-1] == max_clue+1, max_clue+1, entrance_count[r][c-1] + 1)))
-                        else:
-                            require((parent[r][c] != '<') | (entrance_count[r][c] == entrance_count[r][c-1]))
-                    if c < E.C-1:
-                        if (r, c) in room and (r, c+1) in cell_to_out_of_region_neighbors[(r,c)]:
-                            require((parent[r][c] != '>') | (entrance_count[r][c] == cond(entrance_count[r][c+1] == max_clue+1, max_clue+1, entrance_count[r][c+1] + 1)))
-                        else:
-                            require((parent[r][c] != '>') | (entrance_count[r][c] == entrance_count[r][c+1]))
-            for (r, c) in room_to_number_clues[room]:
-                value = E.clues[(r,c)]
-                require((entrance_count[r][c] + (1 if room_has_start[room] else 0)) == value)
-        
     def format_function(r, c):
-        value = E.clues.get((r,c))
-        if type(value) == str and value in 'sg':
+        if (r,c) == start or (r,c) == goal:
             return ''
         return f'{DIRECTIONAL_PAIR_TO_UNICODE[conn_patterns[r][c].value()]}.png'
 
