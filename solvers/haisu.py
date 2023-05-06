@@ -74,7 +74,7 @@ def solve(E):
         if value in ['S','G']: continue
 
         possible_entrances = []
-        for (A,B) in room_spanners[room]: # A in room; B not in room and adj to A
+        for (A,B) in room_spanners.get(room, []): # A in room; B not in room and adj to A
             # so we want ... -> B -> A -> ... -> coord
             r2,c2 = B
             if A == (r2+1,c2): # A below B
