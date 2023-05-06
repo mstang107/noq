@@ -7,7 +7,7 @@ def encode(string):
     return utils.encode(string, has_borders = True, clue_encoder = lambda x : int(x) if x.isnumeric() else x)
     
 def solve(E):
-    if not ('s' in E.clues.values() and 'g' in E.clues.values()):
+    if not ('S' in E.clues.values() and 'G' in E.clues.values()):
         raise ValueError('S and G squares must be provided.')
 
     rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
@@ -18,10 +18,10 @@ def solve(E):
     for room in rooms:
         for (r, c) in room:
             clue = E.clues.get((r,c))
-            if clue == 's':
+            if clue == 'S':
                 start = (r,c)
                 room_has_start[room] = True
-            elif clue == 'g':
+            elif clue == 'G':
                 goal = (r,c)
 
     cell_to_room, room_spanners = {}, {}
@@ -71,7 +71,7 @@ def solve(E):
     for coord in E.clues:
         room = cell_to_room[coord]
         value = E.clues[coord]
-        if value in ['s','g']: continue
+        if value in ['S','G']: continue
 
         possible_entrances = []
         for (A,B) in room_spanners[room]: # A in room; B not in room and adj to A
@@ -97,14 +97,14 @@ def solve(E):
 
     # thanks for writing this formatting code jenna
 
-    ALL = ['J^', 'J<', '7v', '7<', 'L^', 'L>', 'r>', 'rv', '->', '-<', '1^', '1v', 's', 'g']
+    ALL = ['J^', 'J<', '7v', '7<', 'L^', 'L>', 'r>', 'rv', '->', '-<', '1^', '1v', 'S', 'G']
 
     # Paths
     conn_patterns = [[MultiVar(*ALL) for c in range(E.C)] for r in range(E.R)]
     for r in range(E.R):
         for c in range(E.C):
-            require((conn_patterns[r][c] == 's') == ((r,c) == start))
-            require((conn_patterns[r][c] == 'g') == ((r,c) == goal))
+            require((conn_patterns[r][c] == 'S') == ((r,c) == start))
+            require((conn_patterns[r][c] == 'G') == ((r,c) == goal))
 
             # --- Top / bottom edge rules ---
             if r == 0:
@@ -122,48 +122,48 @@ def solve(E):
                 # Cases where top cell has flow in from the bottom will be covered in the r < E.R - 1 section.
                 
                 # Basic rules (no dangling edges)
-                require(var_in(conn_patterns[r][c], TOP_IN+['g']) |
+                require(var_in(conn_patterns[r][c], TOP_IN+['G']) |
                     ~var_in(conn_patterns[r-1][c], BOTTOM_OUT)
                 )
                 # Parent tracking & connectivity
                 flow_from_top = (var_in(conn_patterns[r-1][c], BOTTOM_OUT) |
-                    ((conn_patterns[r-1][c] == 's') & var_in(conn_patterns[r][c], TOP_IN)))
+                    ((conn_patterns[r-1][c] == 'S') & var_in(conn_patterns[r][c], TOP_IN)))
                 require(flow_from_top == (parent[r][c] == '^'))
 
             if r < E.R - 1:
                 # Cases where this cell has flow in from the bottom.
 
                 # Basic rules (no dangling edges)
-                require(var_in(conn_patterns[r][c], BOTTOM_IN+['g']) |
+                require(var_in(conn_patterns[r][c], BOTTOM_IN+['G']) |
                     ~var_in(conn_patterns[r+1][c], TOP_OUT)
                 )
                 # Parent tracking
                 flow_from_bottom = (var_in(conn_patterns[r+1][c], TOP_OUT) |
-                    ((conn_patterns[r+1][c] == 's') & var_in(conn_patterns[r][c], BOTTOM_IN)))
+                    ((conn_patterns[r+1][c] == 'S') & var_in(conn_patterns[r][c], BOTTOM_IN)))
                 require(flow_from_bottom == (parent[r][c] == 'v'))
 
             if 0 < c:
                 # Cases where this cell has flow in from the left.
 
                 # Basic rules (no dangling edges)
-                require(var_in(conn_patterns[r][c], LEFT_IN+['g']) |
+                require(var_in(conn_patterns[r][c], LEFT_IN+['G']) |
                     ~var_in(conn_patterns[r][c-1], RIGHT_OUT)
                 )
                 # Parent tracking
                 flow_from_left = (var_in(conn_patterns[r][c-1], RIGHT_OUT) |
-                    ((conn_patterns[r][c-1] == 's') & var_in(conn_patterns[r][c], LEFT_IN)))
+                    ((conn_patterns[r][c-1] == 'S') & var_in(conn_patterns[r][c], LEFT_IN)))
                 require(flow_from_left == (parent[r][c] == '<'))
                 
             if c < E.C - 1:
                 # Cases where this cell has flow in from the right.
 
                 # Basic rules (no dangling edges)
-                require(var_in(conn_patterns[r][c], RIGHT_IN+['g']) |
+                require(var_in(conn_patterns[r][c], RIGHT_IN+['G']) |
                     ~var_in(conn_patterns[r][c+1], LEFT_OUT)
                 )
                 # Parent tracking
                 flow_from_right = (var_in(conn_patterns[r][c+1], LEFT_OUT) |
-                    ((conn_patterns[r][c+1] == 's') & var_in(conn_patterns[r][c], RIGHT_IN)))
+                    ((conn_patterns[r][c+1] == 'S') & var_in(conn_patterns[r][c], RIGHT_IN)))
                 require(flow_from_right == (parent[r][c] == '>'))
 
     def format_function(r, c):
