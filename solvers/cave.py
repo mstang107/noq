@@ -15,6 +15,8 @@ def solve(E):
 
     # GIVEN NUMBERS ARE SATISFIED
     for (r,c) in E.clues:
+        if E.clues[(r,c)] == '?':
+            continue
         dirs = {}
         for (u,v) in ((1,0),(-1,0),(0,1),(0,-1)):
             ray = []

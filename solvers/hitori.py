@@ -14,6 +14,8 @@ def solve(E):
         number_to_coords = {}
         for c in range(E.C):
             num = E.clues[(r,c)]
+            if num == '?':
+                continue
             if num in number_to_coords:
                 number_to_coords[num].add((r,c))
             else:
@@ -25,6 +27,8 @@ def solve(E):
         number_to_coords = {}
         for r in range(E.R):
             num = E.clues[(r,c)]
+            if num == '?':
+                continue
             if num in number_to_coords:
                 number_to_coords[num].add((r,c))
             else:

@@ -18,6 +18,8 @@ def solve(E):
 
     # given numbers
     for (i,j) in E.clues:
+        if E.clues[(i,j)] == '?':
+            continue
         require(grid[i][j] == E.clues[(i,j)])
 
     # top clues
@@ -27,6 +29,8 @@ def solve(E):
             for k in range(i):
                 top_visible[i][j] &= (grid[i][j] > grid[k][j])
     for j in E.top:
+        if E.top[j] == '?':
+            continue
         require(sum_vars([top_visible[i][j] for i in range(n)]) == E.top[j])
 
     # right clues
@@ -36,6 +40,8 @@ def solve(E):
             for k in range(j+1, n):
                 right_visible[i][j] &= (grid[i][j] > grid[i][k])
     for i in E.right:
+        if E.right[i] == '?':
+            continue
         require(sum_vars([right_visible[i][j] for j in range(n)]) == E.right[i])
 
     # bottom clues
@@ -45,6 +51,8 @@ def solve(E):
             for k in range(i+1,n):
                 bottom_visible[i][j] &= (grid[i][j] > grid[k][j])
     for j in E.bottom:
+        if E.bottom[j] == '?':
+            continue
         require(sum_vars([bottom_visible[i][j] for i in range(n)]) == E.bottom[j])
 
     # left clues
@@ -54,6 +62,8 @@ def solve(E):
             for k in range(j):
                 left_visible[i][j] &= (grid[i][j] > grid[i][k])
     for i in E.left:
+        if E.left[i] == '?':
+            continue
         require(sum_vars([left_visible[i][j] for j in range(n)]) == E.left[i])
 
     return numbers_solver.solutions()
