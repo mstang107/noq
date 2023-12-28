@@ -11,15 +11,15 @@ def default_equality_function(x, y):
     
 def get_all_solutions(generate_solution, avoid_duplicate_solution):
     solutions = []
-    print(f'starting search - it\'s {datetime.now()}', flush=True)
+    #print(f'starting search - it\'s {datetime.now()}', flush=True)
     for i in range(MAX_SOLUTIONS_TO_FIND):
         if claspy_solve():
-            print(f'solution {i+1} found at {datetime.now()}', flush=True)
+    #        print(f'solution {i+1} found at {datetime.now()}', flush=True)
             solutions.append(generate_solution())
             avoid_duplicate_solution()
         else:
             break
-    print(f'all solutions found - it\'s {datetime.now()}', flush=True)
+    #print(f'all solutions found - it\'s {datetime.now()}', flush=True)
     return solutions
 
 def get_grid_solution(grid, format_function = None):

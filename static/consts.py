@@ -13,6 +13,7 @@ types = [
     # 'aho',
     # 'amibo',
     {'value': 'akari', 'name': 'Akari', 'cat': 'obj'},
+	{'value': 'aqre', 'name': 'Aqre', 'cat': 'shade'},
 	{'value': 'aquarium', 'name': 'Aquarium', 'cat': 'shade'},
 	{'value': 'balanceloop', 'name': 'Balance Loop', 'cat': 'loop'},
 	{'value': 'battleship', 'name': 'Battleship', 'cat': 'obj'},

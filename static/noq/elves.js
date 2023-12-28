@@ -834,6 +834,18 @@ class EasyAsElf extends Elf
 	}
 }
 
+let s = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+class HitoriElf extends LetterElf(s)
+{
+	static controls()
+		{
+			let controls = super.controls();
+			delete controls['['+s.toUpperCase()+']'];
+			controls['[0-9A-Z]'] = 'Write clue in cell';
+			return controls;
+		}
+}
+
 class KakuroElf extends Elf
 {
 	static controls()
@@ -1553,6 +1565,7 @@ class CustomElf extends Elf {
 
 let elf_types = {
 	akari: AkariElf,
+	aqre: InvertSolutionZOrder(IntBordersElf()),
 	aquarium: IntBordersElf(),
 	balanceloop: DirectSum(
 		IntElf(1,99), CircleElf, priority='concat'
@@ -1590,7 +1603,7 @@ let elf_types = {
 	hashi: IntElf(0,8,'[0-8]'),
 	heteromino: BgColorElf({'x': ['darkgray', 'gray']}),
 	heyawake: InvertSolutionZOrder(IntBordersElf()),
-	hitori: IntElf(0, 99),
+	hitori: HitoriElf,
 	hotaru: DirectSum(
 		IntElf(),
 		ImageElf(

@@ -9,28 +9,11 @@ def solve(E):
     set_max_val(max(E.R, E.C))
     s = RectangularGridShadingSolver(E.R, E.C)
 
-    # Alone-ness in rows
-    for r in range(E.R):
-        number_to_coords = {}
-        for c in range(E.C):
-            num = E.clues[(r,c)]
-            if num in number_to_coords:
-                number_to_coords[num].add((r,c))
-            else:
-                number_to_coords[num] = {(r,c)}
-        for num in number_to_coords:
-            require(at_most(1, [~s.grid[y][x] for (y,x) in number_to_coords[num]]))
-    # Alone-ness in cols
-    for c in range(E.C):
-        number_to_coords = {}
-        for r in range(E.R):
-            num = E.clues[(r,c)]
-            if num in number_to_coords:
-                number_to_coords[num].add((r,c))
-            else:
-                number_to_coords[num] = {(r,c)}
-        for num in number_to_coords:
-            require(at_most(1, [~s.grid[y][x] for (y,x) in number_to_coords[num]]))
+    K = list(E.clues.keys())
+    for i, (r,c) in enumerate(K):
+        for (r1,c1) in K[i+1:]:
+            if E.clues[(r,c)] == E.clues[(r1,c1)] and (r == r1 or c == c1):
+                require(s.grid[r][c] | s.grid[r1][c1])
     
     s.no_adjacent()
     s.white_connectivity()

@@ -30,7 +30,7 @@ class Encoding:
 def default_clue_encoder(string):
     '''
     If 'string' is a number, return its int value.
-    If 'string' is '?' or '' or a color name, return string.
+    If 'string' is '?' or '' or a color name or a single letter, return string.
     Otherwise, raise an error.
     '''
     if isinstance(string, list):
@@ -40,6 +40,8 @@ def default_clue_encoder(string):
     elif string in ['?', '']:
         return string
     elif string in ['black','darkgray','lightblue']:
+        return string
+    elif string.isalpha() and len(string) == 1:
         return string
     else:
         raise RuntimeError('Invalid input')
