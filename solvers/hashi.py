@@ -51,11 +51,15 @@ def solve(E):
                     conn_atoms[r-1][c] & 
                     var_in(conn_patterns[r][c], UP_CONNECTING+['.']) & 
                     var_in(conn_patterns[r-1][c], DOWN_CONNECTING+['.']) &
-                    ~((conn_patterns[r][c] == '.') & (conn_patterns[r-1][c] == '.')) &
-                    # and numbers are the same
+                    ~((conn_patterns[r][c] == '.') & (conn_patterns[r-1][c] == '.'))
+                )
+                # if this connects up, make sure numbers are the same
+                require(
                     ((conn_nums[r-1][c] == conn_nums[r][c]) | 
                     (conn_patterns[r][c] == '.') | 
-                    (conn_patterns[r-1][c] == '.')))
+                    (conn_patterns[r-1][c] == '.') |  ~var_in(conn_patterns[r][c], UP_CONNECTING+['.']))
+                )
+                    
             if r < E.R - 1:
                 # if the cell below connects up, this must connect down or be a root
                 require(
@@ -67,11 +71,14 @@ def solve(E):
                     conn_atoms[r+1][c] & 
                     var_in(conn_patterns[r][c], DOWN_CONNECTING+['.']) & 
                     var_in(conn_patterns[r+1][c], UP_CONNECTING+['.']) &
-                    ~((conn_patterns[r][c] == '.') & (conn_patterns[r+1][c] == '.')) &
-                    # and numbers are the same
+                    ~((conn_patterns[r][c] == '.') & (conn_patterns[r+1][c] == '.'))
+                )
+                # if this connects down, make sure numbers are the same
+                require(
                     ((conn_nums[r+1][c] == conn_nums[r][c]) | 
                     (conn_patterns[r][c] == '.') | 
-                    (conn_patterns[r+1][c] == '.')))
+                    (conn_patterns[r+1][c] == '.')) |  ~var_in(conn_patterns[r][c], DOWN_CONNECTING+['.'])
+                )
             if 0 < c:
                 # if the cell to the left connects right, this must connect left or be a root
                 require(
@@ -83,11 +90,15 @@ def solve(E):
                     conn_atoms[r][c-1] & 
                     var_in(conn_patterns[r][c], LEFT_CONNECTING+['.']) & 
                     var_in(conn_patterns[r][c-1], RIGHT_CONNECTING+['.']) &
-                    ~((conn_patterns[r][c] == '.') & (conn_patterns[r][c-1] == '.')) &
-                    # and numbers are the same
+                    ~((conn_patterns[r][c] == '.') & (conn_patterns[r][c-1] == '.'))
+                )
+                # if this connects left, make sure numbers are the same
+                require(
                     ((conn_nums[r][c-1] == conn_nums[r][c]) | 
                     (conn_patterns[r][c] == '.') | 
-                    (conn_patterns[r][c-1] == '.')))
+                    (conn_patterns[r][c-1] == '.')) |  ~var_in(conn_patterns[r][c], LEFT_CONNECTING+['.'])
+                )
+                    
             if c < E.C - 1:
                 # if the cell to the right connects left, this must connect right or be a root
                 require(
@@ -99,12 +110,15 @@ def solve(E):
                     conn_atoms[r][c+1] & 
                     var_in(conn_patterns[r][c], RIGHT_CONNECTING+['.']) & 
                     var_in(conn_patterns[r][c+1], LEFT_CONNECTING+['.']) &
-                    ~((conn_patterns[r][c] == '.') & (conn_patterns[r][c+1] == '.')) &
-                    # and numbers are the same
+                    ~((conn_patterns[r][c] == '.') & (conn_patterns[r][c+1] == '.'))
+                )
+                # if this connects right, make sure numbers are the same
+                require(
                     ((conn_nums[r][c+1] == conn_nums[r][c]) | 
                     (conn_patterns[r][c] == '.') | 
-                    (conn_patterns[r][c+1] == '.')))
-    
+                    (conn_patterns[r][c+1] == '.')) |  ~var_in(conn_patterns[r][c], RIGHT_CONNECTING+['.'])
+                )
+
     # The bridges have to be connected
     for r in range(E.R):
         for c in range(E.C):
@@ -140,6 +154,8 @@ def solve(E):
                 # atoms are connected
                 var_in(conn_patterns[r][c+1], LEFT_CONNECTING),
                 conn_nums[r][c+1], 0)
+        if (r,c) in E.clues and E.clues[(r,c)] == '?':
+            continue
         require(num_bridges == E.clues[(r, c)])
     
     # prove connectivity of the first node

@@ -184,6 +184,8 @@ def solve(E):
 
     # --- Clue rules ---
     for ((r, c), value) in E.clues.items():
+        if value == '?':
+            continue
         total = IntVar(0)
         for d in dir_to_offset:
             total += cond(grid[r][c][d], 1, 0)
