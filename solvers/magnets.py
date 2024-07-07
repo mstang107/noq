@@ -24,7 +24,6 @@ def solve(E):
     # Require neighbor conditions
     for r in range(E.R):
         for c in range(E.C):
-            print(grid.get_neighbors(r, c))
             require(
                 # None of the neighbors have the same value as this, or this is blank (neighbors can be anything)
                 (sum_bools(0, [(grid[y][x] == grid[r][c]) for (y, x) in grid.get_neighbors(r, c)]) |

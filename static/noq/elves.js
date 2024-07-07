@@ -145,7 +145,7 @@ class Elf
 {
 	static controls()
 	{
-		return {'Arrow keys/Mouse': 'Select cell', 'Delete': 'Clear cell'};
+		return {'Arrow&nbsp;keys/Mouse': 'Select&nbsp;cell', 'Delete': 'Clear cell'};
 	}
 
 	constructor(elt, borders, i, j, dots, default_image_url='')
@@ -460,8 +460,8 @@ class BorderElf extends Elf
 	static controls()
 	{
 		let controls = super.controls();
-		controls['Shift + Arrow keys'] = 'Toggle borders';
-		controls['Click & drag'] = 'Toggle borders';
+		controls['Shift&nbsp;+&nbsp;Arrow&nbsp;keys'] = 'Toggle borders';
+		controls['Click&nbsp;&amp;&nbsp;drag'] = 'Toggle borders';
 		return controls;
 	}
 
@@ -1025,7 +1025,7 @@ class NanroElf extends InvertSolutionZOrder(IntBordersElf())
 	static controls()
 	{
 		let controls = super.controls();
-		controls['Shift + [0-9]'] = 'Add signpost clue';
+		controls['Shift&nbsp;+&nbsp;[0-9]'] = 'Add signpost clue';
 		return controls;
 	}
 
@@ -1349,6 +1349,7 @@ class TapaElf extends Elf
 	{
 		let controls = super.controls();
 		controls['[1-8]'] = 'Write clue in cell';
+		controls['?'] = 'Add \'?\' clue';
 		return controls;
 	}
 

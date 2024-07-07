@@ -8,3 +8,4 @@ noq/settings.py
 **/migrations/
 db.sqlite3
 **/static/consts.py
+.DS_Store
