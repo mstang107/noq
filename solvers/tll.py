@@ -176,11 +176,9 @@ def solve(E):
         ]
         condition = False # condition that this clue is fulfilled
         clue_counts = calculate_clue_counts(clue)
-        print(clue_counts)
         if '?' in clue_counts:
             possible_counts = set()
             expand_q(possible_counts, clue_counts)
-            print('poss:',possible_counts)
             for key in possible_counts:
                 condition |= does_key_match_surroundings(key, adj_indices)
         else:

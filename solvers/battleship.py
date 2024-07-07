@@ -19,7 +19,6 @@ def solve(E):
     # Clue satisfaction for water / ship parts
     for (r,c) in E.clues:
         value = E.clues[(r,c)]
-        print(value)
         # 1x1 ship
         if value == 'o':
             require(grid[r][c] != max_id)
