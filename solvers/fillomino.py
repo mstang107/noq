@@ -65,8 +65,6 @@ def solve(E):
         indep_bound -= len(indep) * clue_num
     max_region_size = max(indep_bound, max_clue)
 
-    print(indep_bound)
-
     region_id = utils.RectangularGrid(E.R, E.C, lambda r,c: IntVar(0, E.C*r+c))
     # this forces each root to be the topleft-most cell (i.e., first in row-major order) of its region
     

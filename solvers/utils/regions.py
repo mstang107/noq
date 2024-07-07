@@ -122,7 +122,8 @@ class RectangularGridRegionSolver:
     
     Can be a "main" or "auxiliary" solver.
     '''
-    def __init__(self, rows, cols, grid = None, given_regions = None, max_num_regions = None, region_symbol_sets = None):
+    def __init__(self, rows, cols, grid = None, given_regions = None, max_num_regions = None,
+        region_symbol_sets = None, has_nonregion_cells = False, nonregion_area_connected = False):
         '''
         rows = # rows
         cols = # columns
@@ -144,20 +145,29 @@ class RectangularGridRegionSolver:
             (it is expected that if region_symbol_sets != None,
                 given_regions == None and max_num_regions != None),
             or None if the regions are already known
+        has_nonregion_cells = True iff there are some cells which are not
+            considered to be part of any "important" region. These cells will
+            be assigned a region ID of max_num_regions-1 (so make sure that
+            the "max_num_regions" you supply is large enough to include the
+            special "nonregion ID").
+        nonregion_area_connected = True iff there's supposed to be one
+            "white" (non-region) area which is orthogonally connected.
+            This can't be True if has_nonregion_cells is False.
         '''
         self.__rows = rows
         self.__cols = cols
         if grid:
             self.__grid = grid
         else:
-            region_symbol_sets = []
+            if not region_symbol_sets:
+                region_symbol_sets = []
+                for i in range(max_num_regions):
+                    region_symbol_sets.append([i])
             self.__grid = RectangularGrid(rows, cols, lambda : IntVar(0, max_num_regions-1))
-            for i in range(max_num_regions):
-                region_symbol_sets.append([i])
         if given_regions == None:
             if max_num_regions == None or region_symbol_sets == None:
                 raise ValueError('If a grid is being provided and regions are not being provided, max # regions and symbol sets must be provided')
-            self.make_regions(max_num_regions, region_symbol_sets)
+            self.make_regions(max_num_regions, region_symbol_sets, has_nonregion_cells, nonregion_area_connected)
             if not grid:
                 for r in range(rows):
                     for c in range(cols):
@@ -194,7 +204,7 @@ class RectangularGridRegionSolver:
         return same_region_symbol
     
     # --- METHODS FOR PUZZLES IN WHICH REGIONS NOT PROVIDED AS PART OF INPUT ---
-    def make_regions(self, max_num_regions, region_symbol_sets):
+    def make_regions(self, max_num_regions, region_symbol_sets, has_nonregion_cells, nonregion_area_connected):
         '''
         Apply constraints that ensure that there at most max_num_regions,
         and that adjacent cells whose values belong to the same set of
@@ -204,14 +214,20 @@ class RectangularGridRegionSolver:
         for symbol_set in region_symbol_sets:
             for symbol in symbol_set:
                 self.__region_symbols[symbol] = symbol_set
-        self.__parent = [[MultiVar('^','v','>','<','.', 'x') for c in range(self.cols)] for r in range(self.rows)]
-        self.__region_id = [[IntVar(0, max_num_regions) for c in range(self.cols)] for r in range(self.rows)]
+        self.__parent = [[MultiVar('^','v','>','<','.','x') for c in range(self.cols)] for r in range(self.rows)]
+        # maximum index of region_id = max_num_regions - 1
+        self.__region_id = [[IntVar(0, max_num_regions-1) for c in range(self.cols)] for r in range(self.rows)]
         
         for r in range(self.rows):
             for c in range(self.cols):
-                require(var_in(self.grid[r][c], self.__region_symbols) == (self.__parent[r][c] != 'x'))
-                # Use a "region ID" of max_num_regions to represent all the cells that aren't actually part of a region
-                require((self.__parent[r][c] == 'x') == (self.__region_id[r][c] == max_num_regions))
+                # If the "non-region" area must be connected, we can't use parent = 'x' because we need flow (see below).
+                if nonregion_area_connected:
+                    pass
+                else:
+                    require(var_in(self.grid[r][c], self.__region_symbols) == (self.__parent[r][c] != 'x'))
+                    if has_nonregion_cells:
+                        # Use a "region ID" of max_num_regions-1 (max ID) to represent all the cells that aren't actually part of a region.
+                        require((self.__parent[r][c] == 'x') == (self.__region_id[r][c] == max_num_regions-1))
 
         # flow_c is a grid of Atoms used to ensure that all cells are
         # connected along the parent pointer field to a root cell.
@@ -234,9 +250,12 @@ class RectangularGridRegionSolver:
                 if c < self.cols-1:
                     flow_c[r][c].prove_if((self.__parent[r][c] == '>') & flow_c[r][c+1] &
                                           (self.__region_id[r][c] == self.__region_id[r][c+1]))
-                # all cells that are "region symbols" must have flow
-                require(flow_c[r][c] | ~var_in(self.grid[r][c], self.__region_symbols))
-                
+                if nonregion_area_connected:
+                    # If the non-region area needs to be connected, then all cells must have flow.
+                    require(flow_c[r][c])
+                else:
+                    # all cells that are "region symbols" must have flow
+                    require(flow_c[r][c] | ~var_in(self.grid[r][c], self.__region_symbols))
 
         # if vertically adjacent cells are both in a region,
         # they have the same region value iff they are in the same region.
@@ -329,8 +348,9 @@ class RectangularGridRegionSolver:
                     )
                     if (r, c) in clue_cells:
                         require(self.__region_size[r][c] == clue_cells[(r, c)])
-    
-    def region_roots(self, region_root_to_id, region_symbol_set = None, exact = False):
+
+    def region_roots(self, region_root_to_id, region_symbol_set = None, exact = False,
+        unassigned_region_id_behavior = None):
         '''
         Set the "roots" of the regions.
         
@@ -341,7 +361,11 @@ class RectangularGridRegionSolver:
             for any type.
         exact is true iff the provided roots are the only roots that exist
             within regions of the appropriate type.
+        unassigned_region_id_behavior specifies how region roots not in region_root_to_id
+            are assigned IDs. If not specified, it defaults to lambda r, c : r*self.cols + c
         '''
+        if not unassigned_region_id_behavior:
+            unassigned_region_id_behavior = lambda r, c : r*self.cols + c
         for r in range(self.rows):
             for c in range(self.cols):
                 if (r, c) in region_root_to_id:
@@ -360,7 +384,7 @@ class RectangularGridRegionSolver:
                             # if this isn't in the correct symbol set and it is a root,
                             # its region ID must be equal to its cell ID
                             require(
-                                (self.__region_id[r][c] == (r*self.cols + c)) |
+                                (self.__region_id[r][c] == unassigned_region_id_behavior(r, c)) |
                                     (self.__parent[r][c] != '.') |
                                     var_in(self.grid[r][c], region_symbol_set)
                             )
@@ -369,7 +393,7 @@ class RectangularGridRegionSolver:
                     else:
                         # if it is a root, its region id must be its cell id
                         require(
-                            (self.__region_id[r][c] == (r*self.cols + c)) |
+                            (self.__region_id[r][c] == unassigned_region_id_behavior(r, c)) |
                                 (self.__parent[r][c] != '.')
                         )
     

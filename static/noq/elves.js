@@ -1690,6 +1690,7 @@ let elf_types = {
 		}
 	)),
 	tll: TLLElf,
+	tren: InvertSolutionZOrder(DirectSum(QuestionMarkElf, IntElf(0,99), 'first')),
 	yajilin: YajilinElf,
 	yajisankazusan: YajikazuElf,
 	yinyang: CircleElf

@@ -238,6 +238,10 @@ const puzzle_types = {
 		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }
 		},
+	tren: {
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10}, connected_whitespace: {name: 'Connected whitespace', value: false} },
+		properties: { outside: '0000', border: false }
+		},
 	yajilin: {
 		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false }

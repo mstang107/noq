@@ -87,6 +87,8 @@ all_test_cases = {
     'tents': [(1, '''{"param_values":{"r":"5","c":"5"},"grid":{"-1,1":"2","-1,5":"0","1,-1":"1","1,5":"e","5,3":"e","5,9":"e","7,7":"e","7,9":"n","9,1":"n","9,3":"e"},"puzzle_type":"tents","properties":{"outside":"1001","border":false}}''')],
     # TLL: test ?s
     'tll': [(3, '''{"param_values":{"r":"6","c":"6"},"grid":{"1,3":[3],"5,9":[1,3,"?"],"7,3":[3,3],"11,9":[2]},"puzzle_type":"tll","properties":{"outside":"0000","border":false}}''')],
+    # Tren: test ?s, with and without forced white connectivity rule
+    'tren': [(2, '''{"param_values":{"r":"6","c":"6","connected_whitespace":false},"grid":{"3,1":"2","5,5":"0","5,11":"2","7,1":"2","7,7":"?","9,11":"1"},"puzzle_type":"tren","properties":{"outside":"0000","border":false}}'''), (2, '''{"param_values":{"r":"5","c":"5","connected_whitespace":false},"grid":{"1,1":"2","1,7":"3","5,5":"2","9,3":"1","9,9":"3"},"puzzle_type":"tren","properties":{"outside":"0000","border":false}}'''), (1, '''{"param_values":{"r":"5","c":"5","connected_whitespace":true},"grid":{"1,1":"2","1,7":"3","5,5":"2","9,3":"1","9,9":"3"},"puzzle_type":"tren","properties":{"outside":"0000","border":false}}''')],
     # Yajilin: test empty gray cells
     'yajilin': [(1, '''{"param_values":{"r":"5","c":"5"},"grid":{"1,9":"gray","5,7":[["2","l"],"gray"],"9,9":[["0","u"],"gray"]},"puzzle_type":"yajilin","properties":{"outside":"0000","border":false}}''')],
     # Yajisan-Kazusan: TODO(mstang): test empty gray cells (I'm not sure what they are for or if they even work)

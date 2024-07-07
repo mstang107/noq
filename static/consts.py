@@ -70,6 +70,7 @@ types = [
 	{'value': 'tents', 'name': 'Tents', 'cat': 'obj'},
 	{'value': 'tll', 'name': 'Tapa-Like Loop', 'cat': 'loop',
 		'aliases': ['tapalikeloop', 'tapa-like-loop', 'tapalike', 'tapa-like']},
+	{'value': 'tren', 'name': 'Tren', 'cat': 'obj'},
 	{'value': 'yajilin', 'name': 'Yajilin', 'cat': 'loop'},
 	{'value': 'yajisankazusan', 'name': 'Yajisan-Kazusan', 'cat': 'shade',
 		'aliases': ['yk', 'yajisan-kazusan', 'yajikazu']},
