@@ -15,6 +15,10 @@ const puzzle_types = {
 		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: true }
 		},
+	aquapelago: {
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
+		properties: { outside: '0000', border: false }
+		},
 	aquarium: {
 		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '1001', border: true }

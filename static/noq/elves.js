@@ -709,32 +709,35 @@ function LetterElf(letterset, concat=false)
 	}
 }
 
-/////////////////////////////////////
-//   PUZZLE-SPECIFIC ELF CLASSES   //
-/////////////////////////////////////
-
-class AkariElf extends DirectSum(BgColorElf(), IntElf(0,4,'[0-4]'), 'second')
+function BlackSquaresAndBlackNumbersElf(intElf)
 {
-	handle_input(key, modifiers)
+	return class extends DirectSum(BgColorElf(), intElf, 'second')
 	{
-		super.handle_input(key, modifiers);
-		if ('01234'.includes(key))
+		handle_input(key, modifiers)
 		{
-			this.puzzle_elt.style.backgroundColor = 'black';
-			this.puzzle_elt.style.color = 'white';
+			super.handle_input(key, modifiers);
+			if ('0123456789'.includes(key))
+			{
+				this.puzzle_elt.style.backgroundColor = 'black';
+				this.puzzle_elt.style.color = 'white';
+			}
 		}
-	}
 
-	load_example(str)
-	{
-		super.load_example(str);
-		if ('01234'.includes(str))
+		load_example(str)
 		{
-			this.puzzle_elt.style.backgroundColor = 'black';
-			this.puzzle_elt.style.color = 'white';
+			super.load_example(str);
+			if (typeof(str) === 'number')
+			{
+				this.puzzle_elt.style.backgroundColor = 'black';
+				this.puzzle_elt.style.color = 'white';
+			}
 		}
 	}
 }
+
+/////////////////////////////////////
+//   PUZZLE-SPECIFIC ELF CLASSES   //
+/////////////////////////////////////
 
 // big
 class CastleWallElf extends Elf
@@ -1565,8 +1568,9 @@ class CustomElf extends Elf {
 }
 
 let elf_types = {
-	akari: AkariElf,
+	akari: BlackSquaresAndBlackNumbersElf(IntElf(0, 4, '[0-4]')),
 	aqre: InvertSolutionZOrder(IntBordersElf()),
+	aquapelago: InvertSolutionZOrder(BlackSquaresAndBlackNumbersElf(IntElf())),
 	aquarium: IntBordersElf(),
 	balanceloop: DirectSum(
 		IntElf(1,99), CircleElf, priority='concat'
@@ -1664,7 +1668,7 @@ let elf_types = {
 	nurimisaki: DirectSum(QuestionMarkElf, IntElf(1,99), 'first'),
 	onsen: InvertSolutionZOrder(IntBordersElf()),
 	rippleeffect: IntBordersElf(),
-	shakashaka: AkariElf,
+	shakashaka: BlackSquaresAndBlackNumbersElf(IntElf(0, 4, '[0-4]')),
 	shikaku: DirectSum(QuestionMarkElf, IntElf(), 'first'),
 	shimaguni: InvertSolutionZOrder(IntBordersElf()),
 	skyscrapers: DirectSum(QuestionMarkElf, IntElf(), 'first'),

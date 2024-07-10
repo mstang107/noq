@@ -107,13 +107,22 @@ class RectangularGridShadingSolver():
             chosen = RectangularGrid(self.rows, self.cols, BoolVar)
             for r in range(self.rows):
                 for c in range(self.cols):
+                    # This part should happen regardless of neighbors, although it's only relevant for 1x1s.
+                    connectivity_grid[r][c].prove_if(chosen[r][c])
                     for (y, x) in connectivity_grid.get_neighbors(r, c):
-                        connectivity_grid[r][c].prove_if(chosen[r][c] |
-                            (~var_in(self.grid[y][x], self.__shading_symbols) &
-                                connectivity_grid[y][x]))
+                        connectivity_grid[r][c].prove_if(
+                            ~var_in(self.grid[y][x], self.__shading_symbols) &
+                                connectivity_grid[y][x])
                     require(connectivity_grid[r][c] | var_in(self.grid[r][c], self.__shading_symbols))
             require(sum_bools(1, [chosen[r][c] for c in range(self.cols) for r in range(self.rows)]))
         
+    def black_clues(self, clue_cells):
+        '''
+        Require that clue cells are shaded.
+        '''
+        for (r, c) in clue_cells:
+            require(var_in(self.grid[r][c], self.__shading_symbols))
+
     def black_connectivity(self, known_root = None):
         '''
         Require that black cells are connected.
@@ -154,11 +163,12 @@ class RectangularGridShadingSolver():
                                 connectivity_grid[y][x]))
                 require(connectivity_grid[r][c] | ~var_in(self.grid[r][c], self.__shading_symbols))
                                 
-    def solutions(self, shaded_color = 'black'):
+    def solutions(self, shaded_color = 'black', debug_function = None):
         '''
         Return a list of solutions, where each solution is a
         dictionary mapping grid coordinates to background colors.
         '''
         return get_all_grid_solutions(self.grid,
             equality_function = lambda x, y: var_in(x, self.__shading_symbols) == var_in(y, self.__shading_symbols),
-            format_function = lambda r, c: shaded_color if var_in(self.grid[r][c].value(), self.__shading_symbols) else '')
+            format_function = lambda r, c: shaded_color if self.grid[r][c].value() in self.__shading_symbols else '',
+            debug_function = debug_function)
