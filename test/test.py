@@ -91,7 +91,6 @@ all_test_cases = {
     'tren': [(2, '''{"param_values":{"r":"6","c":"6","connected_whitespace":false},"grid":{"3,1":"2","5,5":"0","5,11":"2","7,1":"2","7,7":"?","9,11":"1"},"puzzle_type":"tren","properties":{"outside":"0000","border":false}}'''), (2, '''{"param_values":{"r":"5","c":"5","connected_whitespace":false},"grid":{"1,1":"2","1,7":"3","5,5":"2","9,3":"1","9,9":"3"},"puzzle_type":"tren","properties":{"outside":"0000","border":false}}'''), (1, '''{"param_values":{"r":"5","c":"5","connected_whitespace":true},"grid":{"1,1":"2","1,7":"3","5,5":"2","9,3":"1","9,9":"3"},"puzzle_type":"tren","properties":{"outside":"0000","border":false}}''')],
     # Yajilin: test empty gray cells
     'yajilin': [(1, '''{"param_values":{"r":"5","c":"5"},"grid":{"1,9":"gray","5,7":[["2","l"],"gray"],"9,9":[["0","u"],"gray"]},"puzzle_type":"yajilin","properties":{"outside":"0000","border":false}}''')],
-    # Yajisan-Kazusan: TODO(mstang): test empty gray cells (I'm not sure what they are for or if they even work)
     'yajisankazusan': [(1, '''{"param_values":{"r":"6","c":"6"},"grid":{"1,1":["0","r"],"1,11":["3","d"],"3,1":["99","u"],"5,9":["2","l"],"9,3":["2","u"],"9,9":["2","l"],"11,1":["2","u"],"11,5":["1","u"]},"puzzle_type":"yajisankazusan","properties":{"outside":"0000","border":false}}''')],
     'yinyang': [(1, '''{"param_values":{"r":"5","c":"5"},"grid":{"3,1":"w","3,5":"b","5,1":"b","5,9":"w","7,5":"b","7,9":"w"},"puzzle_type":"yinyang","properties":{"outside":"0000","border":false}}''')]
 }

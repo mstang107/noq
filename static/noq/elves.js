@@ -1493,15 +1493,14 @@ class YajilinElf extends DirectSum(
 }
 
 class YajikazuElf extends InvertSolutionZOrder(
-		DirectSum(
-		DirectSum(IntElf(), ImageElf(
-			{'u': 'up_arrow.png',
-			'r': 'right_arrow.png',
-			'd': 'down_arrow.png',
-			'l': 'left_arrow.png'},
-			{'[urdl]': 'Add arrow to cell'}
-		)), BgColorElf({'x': ['gray', 'gray']})
-)) {
+	DirectSum(IntElf(), ImageElf(
+		{'u': 'up_arrow.png',
+		'r': 'right_arrow.png',
+		'd': 'down_arrow.png',
+		'l': 'left_arrow.png'},
+		{'[urdl]': 'Add arrow to cell'}
+	))
+) {
 
 	handle_input(key, modifiers)
 	{
