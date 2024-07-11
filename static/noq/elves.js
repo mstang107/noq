@@ -1665,7 +1665,7 @@ let elf_types = {
 	nuribou: IntElf(),
 	nurikabe: DirectSum(QuestionMarkElf, IntElf(1,99), 'first'),
 	nurimisaki: DirectSum(QuestionMarkElf, IntElf(1,99), 'first'),
-	onsen: InvertSolutionZOrder(IntBordersElf()),
+	onsen: InvertSolutionZOrder(DirectSum(QuestionMarkElf, IntBordersElf(), 'first')),
 	rippleeffect: IntBordersElf(),
 	shakashaka: BlackSquaresAndBlackNumbersElf(IntElf(0, 4, '[0-4]')),
 	shikaku: DirectSum(QuestionMarkElf, IntElf(), 'first'),

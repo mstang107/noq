@@ -62,7 +62,8 @@ all_test_cases = {
     'nurikabe': [(1, '''{"param_values":{"r":"5","c":"5"},"grid":{"1,3":"5","3,5":"?","7,5":"1","9,7":"3"},"puzzle_type":"nurikabe","properties":{"outside":"0000","border":false}}''')],
     # Nurimisaki: test ?s
     'nurimisaki': [(1, '''{"param_values":{"r":"5","c":"5"},"grid":{"1,3":"?","3,1":"?","5,7":"2","9,1":"?"},"puzzle_type":"nurimisaki","properties":{"outside":"0000","border":false}}''')],
-    # Onsen: TODO(jhimawan): Add ?s and then add a test for https://puzz.link/rules.html?onsen
+    # Onsen: test ?s; notably, ? clues still require that the path length within each region is the same
+    'onsen': [(1, '''{"param_values":{"r":"6","c":"6"},"grid":{"1,1":"3","1,4":"black","2,5":"black","2,7":"black","2,9":"black","2,11":"black","4,1":"black","3,4":"black","4,3":"black","4,5":"black","4,7":"black","4,9":"black","4,11":"black","6,1":"black","6,3":"black","6,5":"black","5,8":"black","6,7":"black","6,9":"black","5,11":"2","6,11":"black","7,1":"?","7,4":"black","8,5":"black","8,7":"black","8,9":"black","8,11":"black","9,4":"black","11,4":"black"},"puzzle_type":"onsen","properties":{"outside":"0000","border":true}}''')],
     'rippleeffect': [(1, '''{"param_values":{"r":"4","c":"4"},"grid":{"2,1":"black","1,4":"black","2,3":"black","2,7":"black","4,1":"black","3,3":"1","3,4":"black","4,3":"black","3,5":"4","3,6":"black","6,1":"black","5,3":"3","5,4":"black","5,5":"2","5,6":"black","6,5":"black","7,2":"black","7,6":"black"},"puzzle_type":"rippleeffect","properties":{"outside":"0000","border":true}}''')],
     # Shakashaka: test black cells w/o clues
     'shakashaka': [(1, '''{"param_values":{"r":"6","c":"6"},"grid":{"1,1":"black","1,9":"1","3,7":"3","5,5":"4","7,1":"3","11,7":"black"},"puzzle_type":"shakashaka","properties":{"outside":"0000","border":false}}''')],
