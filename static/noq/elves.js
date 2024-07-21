@@ -1597,6 +1597,7 @@ let elf_types = {
 	binairo: IntElf(0,1,'[0 or 1]'),
 	castlewall: CastleWallElf,
 	cave: DirectSum(QuestionMarkElf, IntElf(), 'first'),
+	chocobanana: InvertSolutionZOrder(IntElf()),
 	chocona: InvertSolutionZOrder(IntBordersElf()),
 	countryroad: InvertSolutionZOrder(IntBordersElf()),
 	doppelblock: IntElf(),

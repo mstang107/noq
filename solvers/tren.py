@@ -25,7 +25,7 @@ def solve(E):
     s = utils.regions.RectangularGridRegionSolver(E.R, E.C, max_num_regions = max_num_regions,
         region_symbol_sets = region_symbol_sets, nonregion_area_connected = connected_whitespace)
     
-    s.region_roots(clue_cell_id, unassigned_region_id_behavior = lambda r, c : white_region_id)
+    s.region_roots(clue_cell_id, unassigned_region_id_constraint = lambda _, r, c : white_region_id)
     
     # Region size constraint -- see utils.regions.set_region_size
     min_region_size = 2

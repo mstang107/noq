@@ -21,6 +21,7 @@ types = [
 	{'value': 'binairo', 'name': 'Binairo', 'cat': 'shade'},
 	{'value': 'castlewall', 'name': 'Castle Wall', 'cat': 'loop'},
 	{'value': 'cave', 'name': 'Cave (Corral)', 'cat': 'shade'},
+	{'value': 'chocobanana', 'name': 'Choco Banana', 'cat': 'shade'},
 	{'value': 'chocona', 'name': 'Chocona', 'cat': 'shade'},
 	{'value': 'countryroad', 'name': 'Country Road', 'cat': 'loop'},
 	{'value': 'doppelblock', 'name': 'Doppelblock', 'cat': 'lsq'},
