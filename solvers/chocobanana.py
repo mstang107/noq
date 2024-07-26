@@ -3,7 +3,6 @@ from . import utils
 from .utils.borders import Direction
 
 def encode(string):
-    print(string)
     return utils.encode(string)
 
 def solve(E):
@@ -16,6 +15,20 @@ def solve(E):
 
     # max val = max region ID or max clue
     set_max_val(max(max_num_regions-1, max_region_size))
+
+    # For each (r, c) clue, figure out the set of other clue coordinates which could possibly be in the same region.
+    coordinates_possibly_in_same_region = {}
+    for ((r, c), v) in E.clues.items():
+        coords_for_r_c = set()
+        for ((y, x), v2) in E.clues.items():
+            if (y, x) == (r, c):
+                continue
+            if v != v2:
+                continue
+            if utils.grids.manhattan_distance((r, c), (y, x)) >= v:
+                continue
+            coords_for_r_c.add((y, x))
+        coordinates_possibly_in_same_region[(r, c)] = coords_for_r_c
 
     # Map each clue cell to its clue number
     # (starts at 0, increases left-to-right, top-to-bottom)
@@ -43,39 +56,31 @@ def solve(E):
             upstream_count = IntVar(0)
 
             if r > 0:
-                # Update upstream count
                 upstream_count += cond(rs.parent[r-1][c] == 'v', upstream[r-1][c], 0)
-                # If this cell is the parent of its upper neighbor, they have the same region size.
-                # Randomly assign a BS region size of min_region_size to all cells in the unclued regions
-                # to provide more constraints to claspy.
-                require(cond(var_in(rs.region_id[r][c], fake_region_ids), region_size[r][c] == min_region_size,
-                    (region_size[r][c] == region_size[r-1][c]) | (rs.parent[r-1][c] != 'v')))
 
             if r < E.R-1:
                 upstream_count += cond(rs.parent[r+1][c] == '^', upstream[r+1][c], 0)
-                require(cond(var_in(rs.region_id[r][c], fake_region_ids), region_size[r][c] == min_region_size,
-                (region_size[r][c] == region_size[r+1][c]) | (rs.parent[r+1][c] != '^')))
 
             if c > 0:
                 upstream_count += cond(rs.parent[r][c-1] == '>', upstream[r][c-1], 0)
-                require(cond(var_in(rs.region_id[r][c], fake_region_ids), region_size[r][c] == min_region_size,
-                    (region_size[r][c] == region_size[r][c-1]) | (rs.parent[r][c-1] != '>')))
 
             if c < E.C-1:
                 upstream_count += cond(rs.parent[r][c+1] == '<', upstream[r][c+1], 0)
-                require(cond(var_in(rs.region_id[r][c], fake_region_ids), region_size[r][c] == min_region_size,
-                    (region_size[r][c] == region_size[r][c+1]) | (rs.parent[r][c+1] != '<')))
 
             # if cell is part of some region, it must obey the upstream counting rule;
             # otherwise, its count is 0.
             require(cond(var_in(rs.region_id[r][c], fake_region_ids), upstream[r][c] == 0, upstream[r][c] == upstream_count + 1))
 
             # associate upstream grid with region_size grid at the roots.
-            require((rs.parent[r][c] != '.') | (upstream[r][c] == region_size[r][c]))
-
-    # --- Region sizes ---
-    for ((r, c), value) in E.clues.items():
-        require(region_size[r][c] == value)
+            if (r, c) in E.clues:
+                v = E.clues[(r, c)]
+                if len(coordinates_possibly_in_same_region[(r, c)]) > 0:
+                    require(
+                        ((rs.parent[r][c] == '.') & (rs.region_id[r][c] == clue_cell_id[(r, c)]) & (upstream[r][c] == v)) |
+                        ((rs.parent[r][c] != '.') & var_in(rs.region_id[r][c], set(clue_cell_id[(y, x)] for (y, x) in coordinates_possibly_in_same_region[(r, c)])))
+                    )
+                else:
+                    require((rs.parent[r][c] == '.') & (rs.region_id[r][c] == clue_cell_id[(r, c)]) & (upstream[r][c] == v))
 
     # Require that ((ID is used by at least 1 clue) == (exactly 1 region root)) except for fake regions
     for i in range(unclued_shaded_region_id):
@@ -142,15 +147,6 @@ def solve(E):
     # Using s.solutions() works fine! But unfortunately this solver's really slow and I was trying to
     # see if providing some more constraints here could make it go faster...
 
-    def debug_function():
-        print('grid')
-        for r in range(E.R):
-            print([rs.grid[r][c].value() for c in range(E.C)])
-        print()
-        print('parent')
-        for r in range(E.R):
-            print([rs.parent[r][c].value() for c in range(E.C)])
-
     def generate_solution():
         return utils.solutions.get_grid_solution(s.grid, lambda r, c: 'darkgray' if s.grid[r][c].value() else '')
 
@@ -166,7 +162,7 @@ def solve(E):
                 x = x & (rs.grid[r][c] == rs.grid[r][c].value())
         require(~x)
 
-    return utils.solutions.get_all_solutions(generate_solution, avoid_duplicate_solution, debug_function)
+    return utils.solutions.get_all_solutions(generate_solution, avoid_duplicate_solution)
 
 def decode(solutions):
     return utils.decode(solutions)

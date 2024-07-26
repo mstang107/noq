@@ -35,6 +35,9 @@ def get_surroundings(rows, cols, r, c):
                 surroundings.append((y, x))
     return surroundings
 
+def manhattan_distance(r1c1, r2c2):
+    return abs(r1c1[0]-r2c2[0]) + abs(r1c1[1]-r2c2[1])
+
 class RectangularGrid:
     '''
     Represents a puzzle as a list of lists, where each internal list
