@@ -1,7 +1,7 @@
 let image_url = (str) => str ? `url('static/noq/images/${str + (/^.*\.png$/.test(str) ? '' : '.png')}')` : str;
 const nav_keys = ['ArrowUp','ArrowRight','ArrowDown','ArrowLeft'];
 const del_keys = ['Backspace','Delete','Escape'];
-const COLORS = ['black','darkgray','lightblue'];
+const COLORS = ['black','darkgray','lightblue','white'];
 const CLIPBOARD_SYMBOLS = {
 	'1': '│',
 	'-': '─',
@@ -709,9 +709,9 @@ function LetterElf(letterset, concat=false)
 	}
 }
 
-function BlackSquaresAndBlackNumbersElf(intElf)
+function BlackBackgroundNumbersElf(min=0, max=99, range='[0-9]', default_image_url='')
 {
-	return class extends DirectSum(BgColorElf(), intElf, 'second')
+	return class extends IntElf(min, max, range, default_image_url)
 	{
 		handle_input(key, modifiers)
 		{
@@ -732,7 +732,24 @@ function BlackSquaresAndBlackNumbersElf(intElf)
 				this.puzzle_elt.style.color = 'white';
 			}
 		}
+
+		load_solution(str)
+		{
+			super.load_solution(str);
+			console.log("load_solution: " + str);
+			if (typeof(str) === 'number')
+			{
+				this.solution_elt.text = str;
+				this.solution_elt.style.backgroundColor = 'black';
+				this.solution_elt.style.color = 'white';
+			}
+		}
 	}
+}
+
+function BlackSquaresAndBlackBackgroundNumbersElf(min=0, max=99, range='[0-9]', default_image_url='')
+{
+	return DirectSum(BgColorElf(), BlackBackgroundNumbersElf(min, max, range, default_image_url), 'second')
 }
 
 /////////////////////////////////////
@@ -982,7 +999,7 @@ class KakuroElf extends Elf
 	}
 }
 
-class KurottoElf extends DirectSum(IntElf(), ImageElf({'-':'white_circle.png'},{'-':'Place empty circle'}), 'first')
+class KurottoElf extends DirectSum(BlackSquaresAndBlackBackgroundNumbersElf(), ImageElf({'-':'white_circle.png'},{'-':'Place empty circle'}), 'first')
 {
 	handle_input(key, modifiers)
 	{
@@ -1567,9 +1584,9 @@ class CustomElf extends Elf {
 }
 
 let elf_types = {
-	akari: BlackSquaresAndBlackNumbersElf(IntElf(0, 4, '[0-4]')),
+	akari: BlackSquaresAndBlackBackgroundNumbersElf(0, 4, '[0-4]'),
 	aqre: InvertSolutionZOrder(IntBordersElf()),
-	aquapelago: InvertSolutionZOrder(BlackSquaresAndBlackNumbersElf(IntElf())),
+	aquapelago: InvertSolutionZOrder(BlackSquaresAndBlackBackgroundNumbersElf()),
 	aquarium: IntBordersElf(),
 	balanceloop: DirectSum(
 		IntElf(1,99), CircleElf, priority='concat'
@@ -1605,6 +1622,7 @@ let elf_types = {
 	fillomino: IntElf(),
 	gokigen: DirectSum(QuestionMarkElf, IntElf(0,4,'[0-4]', 'center_dot'), 'first'),
 	haisu: DirectSum(IntBordersElf(), LetterElf('SG'), 'first'),
+	hamle: BlackBackgroundNumbersElf(),
 	hashi: DirectSum(QuestionMarkElf, IntElf(0,8,'[0-8]'), 'first'),
 	heteromino: BgColorElf({'x': ['darkgray', 'gray']}),
 	heyawake: InvertSolutionZOrder(IntBordersElf()),
@@ -1668,7 +1686,7 @@ let elf_types = {
 	nurimisaki: DirectSum(QuestionMarkElf, IntElf(1,99), 'first'),
 	onsen: InvertSolutionZOrder(DirectSum(QuestionMarkElf, IntBordersElf(), 'first')),
 	rippleeffect: IntBordersElf(),
-	shakashaka: BlackSquaresAndBlackNumbersElf(IntElf(0, 4, '[0-4]')),
+	shakashaka: BlackSquaresAndBlackBackgroundNumbersElf(0, 4, '[0-4]'),
 	shikaku: DirectSum(QuestionMarkElf, IntElf(), 'first'),
 	shimaguni: InvertSolutionZOrder(IntBordersElf()),
 	skyscrapers: DirectSum(QuestionMarkElf, IntElf(), 'first'),
