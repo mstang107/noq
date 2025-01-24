@@ -122,6 +122,20 @@ def solve(E):
                 )
             if r == 0 or c == 0:
                 require(grid[r][c] != br)
+    for r in range(E.R-1):
+        for c in range(E.C-1):
+            # If this cell and the cell to its bottom right are completely white,
+            # then the cell at the top right of the 2x2 will be shaded in its bottom left
+            # iff the cell at the bottom left is shaded in its top right
+            require(
+                (var_in(grid[r][c+1], ('', bl)) == var_in(grid[r+1][c], ('', tr))) |
+                ~((grid[r][c] == ' ') & (grid[r+1][c+1] == ' '))
+            )
+            # Similar but for white cell patterns that are this way /
+            require(
+                (var_in(grid[r][c], ('', br)) == var_in(grid[r+1][c+1], ('', tl))) |
+                ~((grid[r][c+1] == ' ') & (grid[r+1][c] == ' '))
+            )
 
     # Grid-aligned rectangles
     for r in range(E.R):
