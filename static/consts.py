@@ -35,6 +35,7 @@ types = [
 	{'value': 'heyawake', 'name': 'Heyawake', 'cat': 'shade'},
 	{'value': 'hitori', 'name': 'Hitori', 'cat': 'shade'},
 	{'value': 'hotaru', 'name': 'Hotaru Beam', 'cat': 'loop'},
+	{'value': 'icebarn', 'name': 'Icebarn', 'cat': 'loop'},
 	{'value': 'kakuro', 'name': 'Kakuro', 'cat': 'num'},
 	{'value': 'kurotto', 'name': 'Kurotto', 'cat': 'shade'},
 	{'value': 'kuromasu', 'name': 'Kuromasu', 'cat': 'shade'},

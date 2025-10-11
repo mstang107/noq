@@ -866,6 +866,139 @@ class HitoriElf extends LetterElf(s)
 		}
 }
 
+// big
+class IcebarnElf extends Elf {
+	static controls() {
+		let controls = super.controls();
+		controls['u'] = 'Toggle upward arrow';
+		controls['d'] = 'Toggle downward arrow';
+		controls['l'] = 'Toggle left arrow';
+		controls['r'] = 'Toggle right arrow';
+		controls['i'] = 'Toggle ice';
+		return controls;
+	}
+
+	constructor(elt, borders, i, j, dots, default_image_url) {
+		super(elt, borders, i, j, dots, default_image_url);
+		// Each cell tracks the four half-arrows it might contain.
+		this.half_arrows = {
+			out_u: false, out_d: false, out_l: false, out_r: false, // Arrow tails
+			in_u: false, in_d: false, in_l: false, in_r: false    // Arrow heads
+		};
+	}
+
+	handle_input(key, modifiers) {
+		if (del_keys.includes(key)) {
+			// Remove outgoing arrows initiated from this cell.
+			if (this.half_arrows.out_u) this._toggle_arrow('u');
+			if (this.half_arrows.out_d) this._toggle_arrow('d');
+			if (this.half_arrows.out_l) this._toggle_arrow('l');
+			if (this.half_arrows.out_r) this._toggle_arrow('r');
+
+			// Remove incoming arrows pointing to this cell by telling the source cell to toggle.
+			if (this.half_arrows.in_u) this.get_neighbor_elf('u')._toggle_arrow('d');
+			if (this.half_arrows.in_d) this.get_neighbor_elf('d')._toggle_arrow('u');
+			if (this.half_arrows.in_l) this.get_neighbor_elf('l')._toggle_arrow('r');
+			if (this.half_arrows.in_r) this.get_neighbor_elf('r')._toggle_arrow('l');
+
+			this.puzzle_elt.style.backgroundColor = '';
+			return;
+		}
+
+		super.handle_input(key, modifiers);
+
+		if ('udlr'.includes(key)) {
+			this._toggle_arrow(key);
+		} else if (key === 'i') {
+			if (this.puzzle_elt.style.backgroundColor === 'lightblue') {
+				this.puzzle_elt.style.backgroundColor = '';
+			} else {
+				this.puzzle_elt.style.backgroundColor = 'lightblue';
+			}
+		}
+	}
+
+	_toggle_arrow(dir) {
+		let neighbor_elf, this_part, neighbor_part;
+		if (dir === 'u') {
+			if (this.i <= BOUNDS.U + 1) return;
+			neighbor_elf = this.get_neighbor_elf('u');
+			this_part = 'out_u'; neighbor_part = 'in_d';
+		} else if (dir === 'd') {
+			if (this.i >= BOUNDS.D - 1) return;
+			neighbor_elf = this.get_neighbor_elf('d');
+			this_part = 'out_d'; neighbor_part = 'in_u';
+		} else if (dir === 'l') {
+			if (this.j <= BOUNDS.L + 1) return;
+			neighbor_elf = this.get_neighbor_elf('l');
+			this_part = 'out_l'; neighbor_part = 'in_r';
+		} else if (dir === 'r') {
+			if (this.j >= BOUNDS.R - 1) return;
+			neighbor_elf = this.get_neighbor_elf('r');
+			this_part = 'out_r'; neighbor_part = 'in_l';
+		}
+
+		if (neighbor_elf) {
+			this.half_arrows[this_part] = !this.half_arrows[this_part];
+			neighbor_elf.half_arrows[neighbor_part] = !neighbor_elf.half_arrows[neighbor_part];
+			this.update_display();
+			neighbor_elf.update_display();
+		}
+	}
+
+	get_neighbor_elf(dir) {
+		if (dir === 'u') return this.i > BOUNDS.U + 1 ? ELVES[`${this.i - 2},${this.j}`] : null;
+		if (dir === 'd') return this.i < BOUNDS.D - 1 ? ELVES[`${this.i + 2},${this.j}`] : null;
+		if (dir === 'l') return this.j > BOUNDS.L + 1 ? ELVES[`${this.i},${this.j - 2}`] : null;
+		if (dir === 'r') return this.j < BOUNDS.R - 1 ? ELVES[`${this.i},${this.j + 2}`] : null;
+		return null;
+	}
+
+	update_display() {
+		const img_map = {
+			out_u: 'wide_up_arrow_half_1', in_d: 'wide_up_arrow_half_2',
+			out_d: 'wide_down_arrow_half_1', in_u: 'wide_down_arrow_half_2',
+			out_l: 'wide_left_arrow_half_1', in_r: 'wide_left_arrow_half_2',
+			out_r: 'wide_right_arrow_half_1', in_l: 'wide_right_arrow_half_2'
+		};
+		let images = [];
+		for (const part in this.half_arrows) {
+			if (this.half_arrows[part]) {
+				images.push(img_map[part]);
+			}
+		}
+		this.puzzle_elt.style.backgroundImage = images.map(img => image_url(img)).join(', ');
+	}
+
+	encode_input() {
+		let clues = [];
+		if (this.half_arrows.out_u) clues.push('u');
+		if (this.half_arrows.out_d) clues.push('d');
+		if (this.half_arrows.out_l) clues.push('l');
+		if (this.half_arrows.out_r) clues.push('r');
+		if (this.puzzle_elt.style.backgroundColor === 'lightblue') clues.push('i');
+		if (clues.length === 0) return null;
+		return clues.join('');
+	}
+
+	load_example(str) {
+		this.reset();
+		if (typeof str !== 'string') return;
+
+        // This assumes ELVES are all constructed before load_example is called.
+		if (str.includes('u')) this._toggle_arrow('u');
+		if (str.includes('d')) this._toggle_arrow('d');
+		if (str.includes('l')) this._toggle_arrow('l');
+		if (str.includes('r')) this._toggle_arrow('r');
+		if (str.includes('i')) this.puzzle_elt.style.backgroundColor = 'lightblue';
+	}
+
+	reset() {
+		super.reset();
+		this.half_arrows = {out_u: false, out_d: false, out_l: false, out_r: false, in_u: false, in_d: false, in_l: false, in_r: false};
+	}
+}
+
 class KakuroElf extends Elf
 {
 	static controls()
@@ -1643,6 +1776,7 @@ let elf_types = {
 		'compress',
 		'center_dot' // TODO fix load_example for arrays
 	),
+	icebarn: IcebarnElf,
 	kakuro: KakuroElf,
 	kurotto: KurottoElf,
 	kuromasu: DirectSum(QuestionMarkElf, IntElf(1,99), 'first'),

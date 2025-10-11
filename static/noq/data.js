@@ -102,6 +102,10 @@ const puzzle_types = {
 		properties: { outside: '0000', border: false },
 		display: {no_border_lines: true}
 		},
+	icebarn: {
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
+		properties: { outside: '1111', border: false },
+		},
 	kakuro: {
 		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
 		properties: { outside: '0000', border: false },
