@@ -114,22 +114,18 @@ def solve(E):
                 in_reqs.append(var_in(grid[r][c], TOP_IN))
                 out_reqs.append(var_in(grid[r][c], TOP_OUT))
                 loop_graph[r][c].prove_if(var_in(grid[r][c], TOP_IN))
-                loop_graph[r][c].prove_if(var_in(grid[r][c], TOP_OUT))
             elif r == E.R-1:
                 in_reqs.append(var_in(grid[r][c], BOTTOM_IN))
                 out_reqs.append(var_in(grid[r][c], BOTTOM_OUT))
                 loop_graph[r][c].prove_if(var_in(grid[r][c], BOTTOM_IN))
-                loop_graph[r][c].prove_if(var_in(grid[r][c], BOTTOM_OUT))
             if c == 0:
                 in_reqs.append(var_in(grid[r][c], LEFT_IN))
                 out_reqs.append(var_in(grid[r][c], LEFT_OUT))
                 loop_graph[r][c].prove_if(var_in(grid[r][c], LEFT_IN))
-                loop_graph[r][c].prove_if(var_in(grid[r][c], LEFT_OUT))
             elif c == E.C-1:
                 in_reqs.append(var_in(grid[r][c], RIGHT_IN))
                 out_reqs.append(var_in(grid[r][c], RIGHT_OUT))
                 loop_graph[r][c].prove_if(var_in(grid[r][c], RIGHT_IN))
-                loop_graph[r][c].prove_if(var_in(grid[r][c], RIGHT_OUT))
 
     require(sum_bools(1, in_reqs))
     require(sum_bools(1, out_reqs))
@@ -189,6 +185,15 @@ def solve(E):
         for c in range(E.C):
             # not leftmost
             if 0 <= c-1:
+                # cell is connected to loop if it's a "loop start" or
+                # if its in neighbor is part of the loop
+                if 0 <= c-2:
+                    loop_graph[r][c].prove_if(
+                        var_in(grid[r][c], LEFT_IN) & cond(var_in(grid[r][c-1], DIRECTED_CROSSES), loop_graph[r][c-2], loop_graph[r][c-1]))
+                else:
+                    loop_graph[r][c].prove_if(
+                        var_in(grid[r][c], LEFT_IN) & (loop_graph[r][c-1]))
+
                 # if not leftmost and not topmost
                 if 0 <= r-1:
                     if not is_ice((r,c)):
@@ -200,21 +205,6 @@ def solve(E):
                                     var_in(grid[r-1][c], BOTTOM_IN)) ==
                                 (var_in(grid[r][c], LEFT_IN) & var_in(grid[r][c], TOP_OUT)))
 
-                        # cell is connected to loop if it's a "loop start" or
-                        # if its in neighbor is part of the loop
-                        if 0 <= r-2:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'J<') & cond(var_in(grid[r-1][c], DIRECTED_CROSSES), loop_graph[r-2][c], loop_graph[r-1][c])))
-                        else:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'J<') & (loop_graph[r-1][c])))
-                        if 0 <= c-2:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'J^') & cond(var_in(grid[r][c-1], DIRECTED_CROSSES), loop_graph[r][c-2], loop_graph[r][c-1])))
-                        else:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'J^') & (loop_graph[r][c-1])))
-
                 # if not leftmost and not bottommost
                 if r+1 < E.R:
                     if not is_ice((r,c)):
@@ -224,20 +214,6 @@ def solve(E):
                         require((var_in(grid[r][c-1], RIGHT_OUT) &
                                 var_in(grid[r+1][c], TOP_IN)) ==
                                 (var_in(grid[r][c], LEFT_IN) & var_in(grid[r][c], BOTTOM_OUT)))
-                        # cell is connected to loop if it's a "loop start" or
-                        # if its in neighbor is part of the loop
-                        if r+2 < E.R:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == '7<') & cond(var_in(grid[r+1][c], DIRECTED_CROSSES), loop_graph[r+2][c], loop_graph[r+1][c])))
-                        else:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == '7<') & (loop_graph[r+1][c])))
-                        if 0 <= c-2:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == '7v') & cond(var_in(grid[r][c-1], DIRECTED_CROSSES), loop_graph[r][c-2], loop_graph[r][c-1])))
-                        else:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == '7v') & (loop_graph[r][c-1])))
 
                 # if not leftmost and not rightmost
                 if c+1 < E.C:
@@ -253,23 +229,16 @@ def solve(E):
                     require((var_in(grid[r][c-1], RIGHT_OUT) &
                             var_in(grid[r][c+1], LEFT_IN)) ==
                             (var_in(grid[r][c], LEFT_IN) & var_in(grid[r][c], RIGHT_OUT)))
-                    # cell is connected to loop if it's a "loop start" or
-                    # if its in neighbor is part of the loop
-                    if c+2 < E.C:
-                        loop_graph[r][c].prove_if(
-                            (((grid[r][c] == '-<') | (grid[r][c] == '+<v') | (grid[r][c] == '+<^')) & cond(var_in(grid[r][c+1], DIRECTED_CROSSES), loop_graph[r][c+2], loop_graph[r][c+1])))
-                    else:
-                        loop_graph[r][c].prove_if(
-                            (((grid[r][c] == '-<') | (grid[r][c] == '+<v') | (grid[r][c] == '+<^')) & loop_graph[r][c+1]))
-                    if 0 <= c-2:
-                        loop_graph[r][c].prove_if(
-                            (((grid[r][c] == '->') | (grid[r][c] == '+>v') | (grid[r][c] == '+>^')) & cond(var_in(grid[r][c-1], DIRECTED_CROSSES), loop_graph[r][c-2], loop_graph[r][c-1])))
-                    else:
-                        loop_graph[r][c].prove_if(
-                            (((grid[r][c] == '->') | (grid[r][c] == '+>v') | (grid[r][c] == '+>^')) & loop_graph[r][c-1]))
 
             # not rightmost
             if c+1 < E.C:
+                if c+2 < E.C:
+                    loop_graph[r][c].prove_if(
+                        var_in(grid[r][c], RIGHT_IN) & cond(var_in(grid[r][c+1], DIRECTED_CROSSES), loop_graph[r][c+2], loop_graph[r][c+1]))
+                else:
+                    loop_graph[r][c].prove_if(
+                         var_in(grid[r][c], RIGHT_IN) & (loop_graph[r][c+1]))
+
                 # if not rightmost and not topmost
                 if 0 <= r-1:
                     if not is_ice((r,c)):
@@ -280,21 +249,6 @@ def solve(E):
                         require((var_in(grid[r-1][c], BOTTOM_OUT) &
                                 var_in(grid[r][c+1], LEFT_IN)) ==
                                 (var_in(grid[r][c], TOP_IN) & var_in(grid[r][c], RIGHT_OUT)))
-                        # cell is connected to loop if it's a "loop start" or
-                        # if its in neighbor is part of the loop
-                        if c+2 < E.C:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'L^') & cond(var_in(grid[r][c+1], DIRECTED_CROSSES), loop_graph[r][c+2], loop_graph[r][c+1])))
-                        else:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'L^') & (loop_graph[r][c+1])))
-
-                        if 0 <= r-2:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'L>') & cond(var_in(grid[r-1][c], DIRECTED_CROSSES), loop_graph[r-2][c], loop_graph[r-1][c])))
-                        else:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'L>') & (loop_graph[r-1][c])))
 
                 # if not rightmost and not bottommost
                 if r+1 < E.R:
@@ -305,20 +259,22 @@ def solve(E):
                         require((var_in(grid[r][c+1], LEFT_OUT) &
                                 var_in(grid[r+1][c], TOP_IN)) ==
                                 (var_in(grid[r][c], RIGHT_IN) & var_in(grid[r][c], BOTTOM_OUT)))
-                        # cell is connected to loop if it's a "loop start" or
-                        # if its in neighbor is part of the loop
-                        if r+2 < E.R:
-                            loop_graph[r][c].prove_if(
-                                (grid[r][c] == 'r>') & cond(var_in(grid[r+1][c], DIRECTED_CROSSES), loop_graph[r+2][c], loop_graph[r+1][c]))
-                        else:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'r>') & (loop_graph[r+1][c])))
-                        if c+2 < E.C:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'rv') & cond(var_in(grid[r][c+1], DIRECTED_CROSSES), loop_graph[r][c+2], loop_graph[r][c+1])))
-                        else:
-                            loop_graph[r][c].prove_if(
-                                ((grid[r][c] == 'rv') & (loop_graph[r][c+1])))
+
+            if 0 <= r-1:
+                if 0 <= r-2:
+                    loop_graph[r][c].prove_if(
+                        var_in(grid[r][c], TOP_IN) & cond(var_in(grid[r-1][c], DIRECTED_CROSSES), loop_graph[r-2][c], loop_graph[r-1][c]))
+                else:
+                    loop_graph[r][c].prove_if(
+                        var_in(grid[r][c], TOP_IN) & (loop_graph[r-1][c]))
+
+            if r+1 < E.R:
+                if r+2 < E.R:
+                    loop_graph[r][c].prove_if(
+                        var_in(grid[r][c], BOTTOM_IN) & cond(var_in(grid[r+1][c], DIRECTED_CROSSES), loop_graph[r+2][c], loop_graph[r+1][c]))
+                else:
+                    loop_graph[r][c].prove_if(
+                        var_in(grid[r][c], BOTTOM_IN) & (loop_graph[r+1][c]))
 
             # not topmost or bottommost
             if 0 < r and r+1 < E.R:
@@ -328,20 +284,6 @@ def solve(E):
                 require((var_in(grid[r-1][c], BOTTOM_OUT) &
                         var_in(grid[r+1][c], TOP_IN)) ==
                         (var_in(grid[r][c], TOP_IN) & var_in(grid[r][c], BOTTOM_OUT)))
-                # cell is connected to loop if it's a "loop start" or
-                # if its in neighbor is part of the loop
-                if r+2 < E.R:
-                    loop_graph[r][c].prove_if(
-                        (((grid[r][c] == '1^') | (grid[r][c] == '+>^') | (grid[r][c] == '+<^')) & cond(var_in(grid[r+1][c], DIRECTED_CROSSES), loop_graph[r+2][c], loop_graph[r+1][c])))
-                else:
-                    loop_graph[r][c].prove_if(
-                        (((grid[r][c] == '1^') | (grid[r][c] == '+>^') | (grid[r][c] == '+<^')) & loop_graph[r+1][c]))
-                if 0 <= r-2:
-                    loop_graph[r][c].prove_if(
-                        (((grid[r][c] == '1v') | (grid[r][c] == '+<v') | (grid[r][c] == '+>v')) & cond(var_in(grid[r-1][c], DIRECTED_CROSSES), loop_graph[r-2][c], loop_graph[r-1][c])))
-                else:
-                    loop_graph[r][c].prove_if(
-                        (((grid[r][c] == '1v') | (grid[r][c] == '+<v') | (grid[r][c] == '+>v')) & loop_graph[r-1][c]))
 
             if r+1 < E.R:
                 require(var_in(grid[r][c], BOTTOM_OUT) == var_in(grid[r+1][c], TOP_IN))
