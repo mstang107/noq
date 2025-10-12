@@ -103,7 +103,9 @@ const puzzle_types = {
 		display: {no_border_lines: true}
 		},
 	icebarn: {
-		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10} },
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10},
+            must_visit_ice_regions: {name: 'Must visit ice regions?', value: true} 
+        },
 		properties: { outside: '1111', border: false },
 		},
 	kakuro: {

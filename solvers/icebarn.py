@@ -23,23 +23,59 @@ def solve(E):
     DIRECTED = ['J^', 'J<', '7v', '7<', 'L^', 'L>', 'r>', 'rv', '->', '-<', '1^', '1v', '']
     DIRECTED_STRAIGHTS = ['->', '-<', '1^', '1v', '']
 
+    def is_ice(coords):
+        return coords in E.clues and 'i' in E.clues[coords]
+
     set_max_val(len(DIRECTED))
 
     grid = [[MultiVar(*(DIRECTED+DIRECTED_CROSSES)) for c in range(E.C)] for r in range(E.R)]
 
-    # Entry / exit
+    # Entry clues (from outside the grid)
+    has_entry = False
     for c, d in E.top.items():
         if 'd' in d:
             require(var_in(grid[0][c], TOP_IN))
+            if has_entry:
+                raise Exception("Error: Puzzle has multiple IN arrows")
+            has_entry = True
     for c, d in E.bottom.items():
         if 'u' in d:
             require(var_in(grid[E.R-1][c], BOTTOM_IN))
+            if has_entry:
+                raise Exception("Error: Puzzle has multiple IN arrows")
+            has_entry = True
     for r, d in E.left.items():
         if 'r' in d:
             require(var_in(grid[r][0], LEFT_IN))
+            if has_entry:
+                raise Exception("Error: Puzzle has multiple IN arrows")
+            has_entry = True
     for r, d in E.right.items():
         if 'l' in d:
             require(var_in(grid[r][E.C-1], RIGHT_IN))
+            if has_entry:
+                raise Exception("Error: Puzzle has multiple IN arrows")
+            has_entry = True
+
+    # Check that there aren't multiple exit clues
+    has_exit = False
+    for ((r, c), d) in E.clues.items():
+        if r==0 and 'u' in d:
+            if has_exit:
+                raise Exception("Error: Puzzle has multiple OUT arrows")
+            has_exit = True
+        if c==0 and 'l' in d:
+            if has_exit:
+                raise Exception("Error: Puzzle has multiple OUT arrows")
+            has_exit = True
+        if r+1==E.R and 'd' in d:
+            if has_exit:
+                raise Exception("Error: Puzzle has multiple OUT arrows")
+            has_exit = True
+        if c+1==E.C and 'r' in d:
+            if has_exit:
+                raise Exception("Error: Puzzle has multiple OUT arrows")
+            has_exit = True
 
     # Clues:
     for ((r, c), d) in E.clues.items():
@@ -62,9 +98,10 @@ def solve(E):
         if 'i' in d:
             require(var_in(grid[r][c], DIRECTED_STRAIGHTS+DIRECTED_CROSSES+['']))
 
+    # No crossing on non-ice cells
     for r in range(E.R):
         for c in range(E.C):
-            if (r, c) not in E.clues or ('i' not in E.clues[(r, c)]):
+            if not is_ice((r,c)):
                 require(~var_in(grid[r][c], DIRECTED_CROSSES))
 
     in_reqs = []
@@ -104,10 +141,7 @@ def solve(E):
                 coordinates of an entire room
         '''
         # initially, all cells are unexplored
-        unexplored_cells = set()
-        for (r, c), d in E.clues.items():
-            if d == 'i':
-                unexplored_cells.add((r, c))
+        unexplored_cells = set(coords for coords in E.clues if is_ice(coords))
 
         # build a set of rooms
         # (if there are clues, we need this for stranded-edge checks)
@@ -147,8 +181,9 @@ def solve(E):
 
         return room_set
 
-    for ice_region in full_bfs():
-        require(at_least(1, [grid[r][c] != '' for (r, c) in ice_region]))
+    if E.params.get('must_visit_ice_regions',False):
+        for ice_region in full_bfs():
+            require(at_least(1, [grid[r][c] != '' for (r, c) in ice_region]))
 
     for r in range(E.R):
         for c in range(E.C):
@@ -156,7 +191,7 @@ def solve(E):
             if 0 <= c-1:
                 # if not leftmost and not topmost
                 if 0 <= r-1:
-                    if (r, c) not in E.clues or E.clues[(r,c)] != 'i':
+                    if not is_ice((r,c)):
                         # Can't only do J cases because crosses also exist
                         require((var_in(grid[r][c-1], RIGHT_IN) &
                                     var_in(grid[r-1][c], BOTTOM_OUT)) ==
@@ -182,7 +217,7 @@ def solve(E):
 
                 # if not leftmost and not bottommost
                 if r+1 < E.R:
-                    if (r, c) not in E.clues or E.clues[(r,c)] != 'i':
+                    if not is_ice((r,c)):
                         require((var_in(grid[r][c-1], RIGHT_IN) &
                                 var_in(grid[r+1][c], TOP_OUT)) ==
                                 (var_in(grid[r][c], LEFT_OUT) & var_in(grid[r][c], BOTTOM_IN)))
@@ -237,7 +272,7 @@ def solve(E):
             if c+1 < E.C:
                 # if not rightmost and not topmost
                 if 0 <= r-1:
-                    if (r, c) not in E.clues or E.clues[(r,c)] != 'i':
+                    if not is_ice((r,c)):
                         # We can't only do L cases because crosses also exist
                         require((var_in(grid[r-1][c], BOTTOM_IN) &
                                 var_in(grid[r][c+1], LEFT_OUT)) ==
@@ -263,7 +298,7 @@ def solve(E):
 
                 # if not rightmost and not bottommost
                 if r+1 < E.R:
-                    if (r, c) not in E.clues or E.clues[(r,c)] != 'i':
+                    if not is_ice((r,c)):
                         require((var_in(grid[r][c+1], LEFT_IN) &
                                 var_in(grid[r+1][c], TOP_OUT)) ==
                                 (var_in(grid[r][c], RIGHT_OUT) & var_in(grid[r][c], BOTTOM_IN)))
@@ -295,7 +330,7 @@ def solve(E):
                         (var_in(grid[r][c], TOP_IN) & var_in(grid[r][c], BOTTOM_OUT)))
                 # cell is connected to loop if it's a "loop start" or
                 # if its in neighbor is part of the loop
-                if r+2 < E.C:
+                if r+2 < E.R:
                     loop_graph[r][c].prove_if(
                         (((grid[r][c] == '1^') | (grid[r][c] == '+>^') | (grid[r][c] == '+<^')) & cond(var_in(grid[r+1][c], DIRECTED_CROSSES), loop_graph[r+2][c], loop_graph[r+1][c])))
                 else:

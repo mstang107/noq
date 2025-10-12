@@ -138,6 +138,18 @@ function toggle_background_image(elt, img) // used in Spiral Galaxies
 	}
 }
 
+function is_outside_left_cell(i, j)    { return j < BOUNDS.L+2;}
+function is_outside_right_cell(i, j)   { return j > BOUNDS.R-2;}
+function is_outside_top_cell(i, j)     { return i < BOUNDS.U+2;}
+function is_outside_bottom_cell(i, j)  { return i > BOUNDS.D-2;}
+function is_inside_grid(i,j) {
+    if (is_outside_left_cell(i,j)) return false;
+    if (is_outside_right_cell(i,j)) return false;
+    if (is_outside_top_cell(i,j)) return false;
+    if (is_outside_bottom_cell(i,j)) return false;
+    return true;
+}
+
 ///////////////////////////////
 //       BASE ELF CLASS      //
 ///////////////////////////////
@@ -908,8 +920,15 @@ class IcebarnElf extends Elf {
 		super.handle_input(key, modifiers);
 
 		if ('udlr'.includes(key)) {
+            // no putting arrows in weird places
+            if (is_outside_left_cell(this.i, this.j) && key != 'r') return;
+            if (is_outside_right_cell(this.i, this.j) && key != 'l') return;
+            if (is_outside_top_cell(this.i, this.j) && key != 'd') return;
+            if (is_outside_bottom_cell(this.i, this.j) && key != 'u') return;
 			this._toggle_arrow(key);
 		} else if (key === 'i') {
+            // ice can only go inside the grid
+            if (!is_inside_grid(this.i, this.j)) return;
 			if (this.puzzle_elt.style.backgroundColor === 'lightblue') {
 				this.puzzle_elt.style.backgroundColor = '';
 			} else {
